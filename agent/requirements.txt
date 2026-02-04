@@ -1,0 +1,27 @@
+# NEXUS Agent Requirements
+# Python 3.11+
+
+# Core dependencies
+fastapi==0.115.12
+uvicorn[standard]==0.34.0
+pydantic==2.10.6
+python-multipart==0.0.20
+
+# For production (LLM inference)
+# Uncomment when ready to use real models:
+# torch==2.5.1
+# transformers==4.47.1
+# accelerate==1.2.1
+# anthropic==0.42.0
+
+# Utilities
+python-dotenv==1.0.1
+aiohttp==3.11.11
+asyncio==3.4.3
+
+# Data processing
+numpy==2.2.1
+pandas==2.2.3
+
+# Logging and monitoring
+loguru==0.7.3
