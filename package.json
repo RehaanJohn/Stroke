@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "scrape": "cd x_scrapper && python3 scrape_crypto_fast.py"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.10",
@@ -16,6 +17,8 @@
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
     "viem": "^2.45.1",
     "wagmi": "^2.19.5"
   },

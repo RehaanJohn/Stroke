@@ -4,10 +4,46 @@ import Link from "next/link";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
+interface Tweet {
+  id: number;
+  username: string;
+  text: string;
+  time: string;
+  likes: string;
+  retweets: string;
+  replies: string;
+  scrapedAt: string;
+}
 
 export default function Home() {
   const { isConnected } = useAccount();
   const router = useRouter();
+  const [tweets, setTweets] = useState<Tweet[]>([]);
+  const [loadingTweets, setLoadingTweets] = useState(true);
+
+  // Fetch latest tweets
+  useEffect(() => {
+    const fetchTweets = async () => {
+      try {
+        setLoadingTweets(true);
+        const response = await fetch('/api/twitter/trending?limit=10');
+        const data = await response.json();
+        if (data.success && data.tweets) {
+          setTweets(data.tweets);
+        }
+      } catch (error) {
+        console.error('Failed to fetch tweets:', error);
+      } finally {
+        setLoadingTweets(false);
+      }
+    };
+
+    fetchTweets();
+    const interval = setInterval(fetchTweets, 30 * 60 * 1000); // Refresh every 30 mins
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
       {/* Navigation */}
@@ -19,7 +55,26 @@ export default function Home() {
             </div>
             <span className="text-white font-bold text-xl">NEXUS</span>
           </div>
-          <ConnectButton />
+          <div className="flex items-center gap-4">
+            {/* Twitter Feed Icon */}
+            <Link 
+              href="#signals" 
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all group"
+            >
+              <div className="w-5 h-5 bg-black rounded flex items-center justify-center">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </div>
+              <span className="text-white text-sm font-medium group-hover:text-purple-300 transition-colors">
+                Market Signals
+              </span>
+              <span className="px-2 py-0.5 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 text-xs font-bold">
+                {loadingTweets ? '...' : tweets.length}
+              </span>
+            </Link>
+            <ConnectButton />
+          </div>
         </div>
       </nav>
 
@@ -151,6 +206,90 @@ export default function Home() {
                 <p className="text-gray-400 leading-relaxed">{feature.desc}</p>
               </div>
             ))}
+          </div>
+
+          {/* Live Market Signals Section */}
+          <div id="signals" className="mb-20">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </div>
+                <h2 className="text-4xl font-bold text-white">Live Market Signals</h2>
+              </div>
+              <p className="text-gray-400 max-w-2xl mx-auto">
+                Real-time updates from 150+ sources including regulators, institutions, political figures, and on-chain trackers
+              </p>
+            </div>
+
+            {loadingTweets ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-400">Loading signals...</p>
+                </div>
+              </div>
+            ) : tweets.length === 0 ? (
+              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-12 text-center">
+                <div className="text-5xl mb-4">📡</div>
+                <p className="text-gray-400 mb-2">No signals yet</p>
+                <p className="text-gray-500 text-sm">Run the scraper to fetch market-moving data</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {tweets.map((tweet) => (
+                  <div
+                    key={tweet.id}
+                    className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg border border-white/10 rounded-xl p-5 hover:border-purple-500/50 transition-all group"
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white text-sm font-bold">{tweet.username.charAt(0).toUpperCase()}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-white font-semibold truncate">@{tweet.username}</span>
+                          {['elonmusk', 'VitalikButerin', 'saylor', 'cz_binance', 'SECgov', 'federalreserve', 'WhiteHouse'].includes(tweet.username) && (
+                            <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-gray-400 text-xs">{tweet.time}</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-300 text-sm leading-relaxed mb-3 line-clamp-3 group-hover:line-clamp-none">
+                      {tweet.text}
+                    </p>
+                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                      <span className="flex items-center gap-1">
+                        💬 {tweet.replies}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        🔄 {tweet.retweets}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        ❤️ {tweet.likes}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="text-center mt-8">
+              <Link
+                href="/portfolio"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white transition-all"
+              >
+                View All Signals in Dashboard
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
           </div>
 
           {/* CTA Section */}

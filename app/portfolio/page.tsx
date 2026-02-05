@@ -140,10 +140,46 @@ const mockLogs = [
   }
 ];
 
+interface Tweet {
+  id: number;
+  username: string;
+  text: string;
+  time: string;
+  likes: string;
+  retweets: string;
+  replies: string;
+  scrapedAt: string;
+}
+
 export default function Portfolio() {
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null);
+  const [tweets, setTweets] = useState<Tweet[]>([]);
+  const [loadingTweets, setLoadingTweets] = useState(true);
   const { isConnected, address } = useAccount();
   const router = useRouter();
+
+  // Fetch tweets on mount and every 12 hours
+  useEffect(() => {
+    const fetchTweets = async () => {
+      try {
+        setLoadingTweets(true);
+        const response = await fetch('/api/twitter/trending?limit=30');
+        const data = await response.json();
+        if (data.success && data.tweets) {
+          setTweets(data.tweets);
+        }
+      } catch (error) {
+        console.error('Failed to fetch tweets:', error);
+      } finally {
+        setLoadingTweets(false);
+      }
+    };
+
+    fetchTweets();
+    // Refresh every 12 hours
+    const interval = setInterval(fetchTweets, 12 * 60 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Redirect to home if wallet not connected
   useEffect(() => {
@@ -224,7 +260,7 @@ export default function Portfolio() {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px_320px] gap-6">
             {/* Positions List */}
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
@@ -366,6 +402,84 @@ export default function Portfolio() {
                   <div className="flex items-center justify-between text-xs text-gray-400">
                     <span>Last updated: Just now</span>
                     <button className="text-purple-400 hover:text-purple-300">Clear logs</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Twitter Feed Sidebar */}
+            <div className="lg:sticky lg:top-24 h-fit">
+              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 h-[calc(100vh-120px)] flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Market Signals</h2>
+                    <p className="text-xs text-gray-400">Live from 150+ sources</p>
+                  </div>
+                </div>
+
+                {loadingTweets ? (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-gray-400 text-sm">Loading signals...</p>
+                    </div>
+                  </div>
+                ) : tweets.length === 0 ? (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-gray-400 text-sm mb-2">No tweets yet</p>
+                      <p className="text-gray-500 text-xs">Run scraper to fetch data</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    {tweets.map((tweet) => (
+                      <div
+                        key={tweet.id}
+                        className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-start gap-2 mb-2">
+                          <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white text-xs font-bold">{tweet.username.charAt(0).toUpperCase()}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-white text-sm font-medium truncate">@{tweet.username}</span>
+                              {['elonmusk', 'VitalikButerin', 'saylor', 'cz_binance'].includes(tweet.username) && (
+                                <span className="text-xs">✓</span>
+                              )}
+                            </div>
+                            <span className="text-gray-400 text-xs">{tweet.time}</span>
+                          </div>
+                        </div>
+                        <p className="text-gray-300 text-sm leading-relaxed mb-2 line-clamp-4 group-hover:line-clamp-none">
+                          {tweet.text}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <span>💬</span>{tweet.replies}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span>🔄</span>{tweet.retweets}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span>❤️</span>{tweet.likes}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    <span>Updates: Twice daily</span>
+                    <span className="text-purple-400">{tweets.length} signals</span>
                   </div>
                 </div>
               </div>
