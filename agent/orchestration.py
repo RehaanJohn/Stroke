@@ -12,7 +12,7 @@ from collections import deque
 
 from .data_ingestion import DataIngestion, TokenSignal
 from .local_llm_screener import LocalLLMScreener, FlaggedToken
-from .claude_analyzer import GeminiAnalyzer, TradePlan
+from .gemini_analyzer import GeminiAnalyzer, TradePlan
 from .social_monitor import SocialMonitor
 
 logging.basicConfig(level=logging.INFO)

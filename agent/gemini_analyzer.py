@@ -1,6 +1,6 @@
 """
 Gemini Analyzer (Tier 2)
-Deep analysis using Google Gemini 3 Pro for high-confidence trade recommendations
+Deep analysis using Google Gemini with intelligent rate limiting and batch splitting
 """
 
 import logging
@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 from dataclasses import dataclass, asdict
 import os
+import math
 
 from google import genai
 from google.genai import types
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class TradePlan:
-    """Structured trade recommendation from Claude"""
+    """Structured trade recommendation from Gemini"""
     token_symbol: str
     token_address: str
     chain: str
@@ -55,9 +56,26 @@ class TradePlan:
 
 class GeminiAnalyzer:
     """
-    Tier 2: Deep analysis using Gemini 3 Pro Preview
-    Processes all flagged tokens in a SINGLE BATCH REQUEST
+    Tier 2: Deep analysis using Gemini with intelligent rate limiting
+    Features:
+    - Automatic batch splitting to avoid rate limits
+    - Exponential backoff retry logic
+    - Fallback to different Gemini models
+    - Smart rate limiting
     """
+    
+    # Configuration constants
+    MAX_TOKENS_PER_BATCH = 30000  # Conservative estimate for free tier
+    MAX_BATCH_SIZE = 20  # Max tokens per API call
+    RETRY_DELAYS = [3, 6, 12]  # Exponential backoff delays (seconds)
+    
+    # Models in order of preference (will fallback if quota exceeded)
+    # Using correct Gemini 3 model names from official documentation
+    MODELS = [
+        "gemini-3-flash-preview",  # Latest Gemini 3 Flash (free, high quota)
+        "gemini-1.5-flash",         # Stable Gemini 1.5 Flash (free, high quota)
+        "gemini-1.5-pro",           # Gemini 1.5 Pro fallback (if available)
+    ]
     
     # Gemini batch analysis prompt
     BATCH_ANALYSIS_PROMPT = """You are an expert crypto trading analyst specializing in short-selling opportunities. 
@@ -112,7 +130,7 @@ Analyze all tokens and return a JSON array with complete analysis for each token
 
     def __init__(self, api_key: Optional[str] = None, mock_mode: bool = True):
         """
-        Initialize Gemini Analyzer
+        Initialize Gemini Analyzer with intelligent rate limiting
         
         Args:
             api_key: Google API key (or set GEMINI_API_KEY env var)
@@ -120,6 +138,9 @@ Analyze all tokens and return a JSON array with complete analysis for each token
         """
         self.mock_mode = mock_mode
         self.client = None
+        self.current_model_index = 0  # Track which model we're using
+        self.last_request_time = 0
+        self.min_request_interval = 1.0  # Minimum seconds between requests
         
         self.stats = {
             "total_analyzed": 0,
@@ -129,7 +150,10 @@ Analyze all tokens and return a JSON array with complete analysis for each token
             "total_api_cost_usd": 0.0,
             "avg_processing_time_ms": 0,
             "api_errors": 0,
-            "batch_requests": 0
+            "batch_requests": 0,
+            "rate_limit_hits": 0,
+            "model_fallbacks": 0,
+            "batches_split": 0
         }
         
         if not mock_mode:
@@ -143,10 +167,47 @@ Analyze all tokens and return a JSON array with complete analysis for each token
         if not api_key:
             raise ValueError("Gemini API key required. Set GEMINI_API_KEY env var.")
         
-        # Set API key for genai
         os.environ["GOOGLE_API_KEY"] = api_key
         self.client = genai.Client(api_key=api_key)
-        logger.info("✅ Gemini 3 Pro Preview API client initialized")
+        logger.info(f"✅ Gemini API client initialized (model: {self.MODELS[0]})")
+    
+    def _rate_limit(self):
+        """Enforce minimum time between API requests"""
+        elapsed = time.time() - self.last_request_time
+        if elapsed < self.min_request_interval:
+            sleep_time = self.min_request_interval - elapsed
+            time.sleep(sleep_time)
+        self.last_request_time = time.time()
+    
+    def _get_current_model(self) -> str:
+        """Get the current model to use"""
+        return self.MODELS[min(self.current_model_index, len(self.MODELS) - 1)]
+    
+    def _fallback_to_next_model(self):
+        """Switch to the next model in the fallback chain"""
+        if self.current_model_index < len(self.MODELS) - 1:
+            self.current_model_index += 1
+            self.stats["model_fallbacks"] += 1
+            new_model = self._get_current_model()
+            logger.warning(f"⚠️  Falling back to model: {new_model}")
+            return True
+        return False
+    
+    def _estimate_token_count(self, text: str) -> int:
+        """Rough estimate of token count"""
+        return len(text) // 4  # Rough approximation
+    
+    def _should_split_batch(self, flagged_tokens: List[FlaggedToken]) -> bool:
+        """Determine if batch should be split based on size"""
+        if len(flagged_tokens) <= self.MAX_BATCH_SIZE:
+            return False
+        
+        # Estimate token count for the batch
+        tokens_data = self._format_tokens_batch(flagged_tokens[:5])  # Sample
+        avg_tokens_per_item = self._estimate_token_count(tokens_data) / 5
+        total_estimated = avg_tokens_per_item * len(flagged_tokens)
+        
+        return total_estimated > self.MAX_TOKENS_PER_BATCH
     
     def _format_tokens_batch(self, flagged_tokens: List[FlaggedToken]) -> str:
         """Format multiple flagged tokens for batch analysis"""
@@ -323,55 +384,179 @@ TIER 1 REASONING: {flagged.reasoning}
     
     def _gemini_analyze_batch(self, flagged_tokens: List[FlaggedToken]) -> List[TradePlan]:
         """
-        Use Gemini 3 Pro for batch analysis (SINGLE API CALL FOR ALL TOKENS)
+        Use Gemini for batch analysis with intelligent retry and rate limiting
         """
         if not flagged_tokens:
             return []
         
+        # Check if we should split the batch
+        if self._should_split_batch(flagged_tokens):
+            return self._analyze_with_splitting(flagged_tokens)
+        
+        # Single batch processing with retry logic
         tokens_data = self._format_tokens_batch(flagged_tokens)
         prompt = self.BATCH_ANALYSIS_PROMPT.format(
             num_tokens=len(flagged_tokens),
             tokens_data=tokens_data
         )
         
-        try:
-            logger.info(f"📡 Sending BATCH request to Gemini for {len(flagged_tokens)} tokens...")
-            
-            response = self.client.models.generate_content(
-                model="gemini-3-pro-preview",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0.3,
-                    response_mime_type="application/json"
+        # Try with retries and model fallbacks
+        for retry_attempt in range(len(self.RETRY_DELAYS) + 1):
+            try:
+                # Rate limiting
+                self._rate_limit()
+                
+                current_model = self._get_current_model()
+                logger.info(f"📡 Sending BATCH request to Gemini ({current_model}) for {len(flagged_tokens)} tokens...")
+                
+                response = self.client.models.generate_content(
+                    model=current_model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=1.0,  # Keep default for Gemini 3
+                        response_mime_type="application/json"
+                    )
                 )
-            )
+                
+                # Parse JSON response
+                content = response.text
+                
+                # Extract JSON if wrapped in markdown
+                if "```json" in content:
+                    content = content.split("```json")[1].split("```")[0]
+                elif "```" in content:
+                    content = content.split("```")[1].split("```")[0]
+                
+                analyses = json.loads(content.strip())
+                
+                # Estimate API cost (Gemini Flash is free tier friendly)
+                input_chars = len(prompt)
+                output_chars = len(content)
+                input_tokens = input_chars / 4
+                output_tokens = output_chars / 4
+                
+                # Cost varies by model (Flash is essentially free)
+                if "flash" in current_model.lower():
+                    cost = 0.0  # Free tier
+                else:
+                    cost = (input_tokens / 1_000_000 * 1.25) + (output_tokens / 1_000_000 * 5.0)
+                
+                self.stats["total_api_cost_usd"] += cost
+                self.stats["batch_requests"] += 1
+                
+                logger.info(f"✅ Received Gemini batch analysis for {len(analyses)} tokens (cost: ${cost:.4f})")
+                
+                # Build TradePlans from Gemini response
+                return self._parse_gemini_response(analyses, flagged_tokens)
+                
+            except Exception as e:
+                error_str = str(e)
+                error_dict = {}
+                
+                # Try to parse error JSON
+                try:
+                    if hasattr(e, 'message'):
+                        error_dict = json.loads(str(e.message)) if isinstance(e.message, str) else {}
+                    elif 'error' in error_str:
+                        # Extract JSON from error string
+                        import re
+                        json_match = re.search(r'\{.*\}', error_str, re.DOTALL)
+                        if json_match:
+                            error_dict = json.loads(json_match.group())
+                except:
+                    pass
+                
+                error_code = error_dict.get('error', {}).get('code', 0)
+                error_status = error_dict.get('error', {}).get('status', '')
+                
+                # Handle 404 NOT_FOUND - model doesn't exist, fallback immediately
+                if error_code == 404 or "404" in error_str or "NOT_FOUND" in error_str:
+                    logger.error(f"Gemini API error: {error_code} {error_status}. {error_dict}")
+                    
+                    # Try next model in fallback chain
+                    if self._fallback_to_next_model():
+                        logger.warning(f"⚠️  Model not found, trying next model...")
+                        continue
+                    else:
+                        logger.error("All models exhausted, using mock analysis")
+                        return self._mock_analyze_batch(flagged_tokens)
+                
+                # Handle rate limit (429)
+                elif error_code == 429 or "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                    self.stats["rate_limit_hits"] += 1
+                    logger.error(f"Gemini API error: {error_code} {error_status}. {error_dict}")
+                    
+                    # Try to fallback to next model
+                    if self._fallback_to_next_model():
+                        logger.warning(f"⚠️  Rate limit hit, trying next model...")
+                        continue
+                    
+                    # Or split batch if we have multiple tokens
+                    if len(flagged_tokens) > 1:
+                        logger.warning(f"⚠️  Rate limit hit, splitting batch...")
+                        return self._analyze_with_splitting(flagged_tokens)
+                    
+                    # Or retry with delay for single token
+                    if retry_attempt < len(self.RETRY_DELAYS):
+                        delay = self.RETRY_DELAYS[retry_attempt]
+                        logger.warning(f"Retrying in {delay}s...")
+                        time.sleep(delay)
+                        continue
+                
+                # Handle quota exhausted - split into smaller batches
+                elif "quota" in error_str.lower() and len(flagged_tokens) > 1:
+                    logger.warning(f"⚠️  Quota issue, splitting batch...")
+                    return self._analyze_with_splitting(flagged_tokens)
+                
+                # Other errors
+                else:
+                    logger.error(f"Gemini API error: {error_str}")
+                    self.stats["api_errors"] += 1
+                    
+                    if retry_attempt < len(self.RETRY_DELAYS):
+                        delay = self.RETRY_DELAYS[retry_attempt]
+                        logger.warning(f"Retrying in {delay}s...")
+                        time.sleep(delay)
+                    else:
+                        # Final fallback to mock
+                        logger.error("All retries exhausted, using mock analysis")
+                        return self._mock_analyze_batch(flagged_tokens)
+        
+        # Should never reach here, but fallback to mock
+        return self._mock_analyze_batch(flagged_tokens)
+    
+    def _analyze_with_splitting(self, flagged_tokens: List[FlaggedToken]) -> List[TradePlan]:
+        """Split large batch into smaller chunks and process sequentially"""
+        chunk_size = min(self.MAX_BATCH_SIZE, math.ceil(len(flagged_tokens) / 3))
+        chunks = [flagged_tokens[i:i + chunk_size] for i in range(0, len(flagged_tokens), chunk_size)]
+        
+        self.stats["batches_split"] += 1
+        logger.info(f"📦 Splitting {len(flagged_tokens)} tokens into {len(chunks)} batches of ~{chunk_size}")
+        
+        all_trade_plans = []
+        for idx, chunk in enumerate(chunks, 1):
+            logger.info(f"  Processing chunk {idx}/{len(chunks)} ({len(chunk)} tokens)...")
+            trade_plans = self._gemini_analyze_batch(chunk)
+            all_trade_plans.extend(trade_plans)
             
-            # Parse JSON response
-            content = response.text
-            
-            # Extract JSON if wrapped in markdown
-            if "```json" in content:
-                content = content.split("```json")[1].split("```")[0]
-            elif "```" in content:
-                content = content.split("```")[1].split("```")[0]
-            
-            analyses = json.loads(content.strip())
-            
-            # Estimate API cost (Gemini pricing)
-            # Input: ~$1.25 per 1M tokens, Output: ~$5.00 per 1M tokens
-            input_chars = len(prompt)
-            output_chars = len(content)
-            input_tokens = input_chars / 4  # Rough estimate
-            output_tokens = output_chars / 4
-            cost = (input_tokens / 1_000_000 * 1.25) + (output_tokens / 1_000_000 * 5.0)
-            self.stats["total_api_cost_usd"] += cost
-            self.stats["batch_requests"] += 1
-            
-            logger.info(f"✅ Received Gemini batch analysis for {len(analyses)} tokens (cost: ${cost:.4f})")
-            
-            # Build TradePlans from Gemini response
-            trade_plans = []
-            for analysis, flagged in zip(analyses, flagged_tokens):
+            # Add delay between chunks to avoid rate limits
+            if idx < len(chunks):
+                time.sleep(2)
+        
+        return all_trade_plans
+    
+    def _parse_gemini_response(self, analyses: List[Dict], flagged_tokens: List[FlaggedToken]) -> List[TradePlan]:
+        """Parse Gemini JSON response into TradePlan objects"""
+        trade_plans = []
+        
+        # Ensure we don't have length mismatch
+        if len(analyses) != len(flagged_tokens):
+            logger.warning(f"⚠️  Response mismatch: got {len(analyses)} analyses for {len(flagged_tokens)} tokens")
+            # Fallback to mock if mismatch
+            return self._mock_analyze_batch(flagged_tokens)
+        
+        for analysis, flagged in zip(analyses, flagged_tokens):
+            try:
                 signal = flagged.signal
                 current_price = 1.0  # Would come from price oracle
                 
@@ -405,21 +590,11 @@ TIER 1 REASONING: {flagged.reasoning}
                     f"  └─ {trade_plan.token_symbol}: {trade_plan.decision} "
                     f"(conf: {trade_plan.confidence}%)"
                 )
-            
-            return trade_plans
-            
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse Gemini JSON response: {e}")
-            logger.error(f"Response content: {content[:500]}...")
-            self.stats["api_errors"] += 1
-            # Fallback to mock
-            return self._mock_analyze_batch(flagged_tokens)
+            except (KeyError, IndexError) as e:
+                logger.error(f"Failed to parse analysis for {flagged.signal.token_symbol}: {e}")
+                continue
         
-        except Exception as e:
-            logger.error(f"Gemini API error: {e}")
-            self.stats["api_errors"] += 1
-            # Fallback to mock
-            return self._mock_analyze_batch(flagged_tokens)
+        return trade_plans
     
     def analyze(self, flagged: FlaggedToken) -> TradePlan:
         """
@@ -490,10 +665,11 @@ TIER 1 REASONING: {flagged.reasoning}
         return trade_plans
     
     def get_stats(self) -> Dict[str, Any]:
-        """Get analysis statistics"""
+        """Get analysis statistics including rate limiting info"""
         return {
             **self.stats,
             "short_rate": self.stats["total_shorts"] / max(self.stats["total_analyzed"], 1),
+            "current_model": self._get_current_model() if not self.mock_mode else "mock",
             "timestamp": datetime.utcnow().isoformat()
         }
 
