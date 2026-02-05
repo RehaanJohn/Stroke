@@ -12,7 +12,7 @@ from collections import deque
 
 from .data_ingestion import DataIngestion, TokenSignal
 from .local_llm_screener import LocalLLMScreener, FlaggedToken
-from .claude_analyzer import ClaudeAnalyzer, TradePlan
+from .claude_analyzer import GeminiAnalyzer, TradePlan
 from .social_monitor import SocialMonitor
 
 logging.basicConfig(level=logging.INFO)
@@ -47,7 +47,7 @@ class OrchestrationEngine:
         # Initialize components
         self.data_ingestion = DataIngestion()
         self.tier1_screener = LocalLLMScreener(mock_mode=tier1_mock)
-        self.tier2_analyzer = ClaudeAnalyzer(mock_mode=tier2_mock)
+        self.tier2_analyzer = GeminiAnalyzer(mock_mode=tier2_mock)
         self.social_monitor = SocialMonitor()  # Twitter/X monitor
         
         # Processing queues

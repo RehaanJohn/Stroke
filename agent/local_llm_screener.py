@@ -8,11 +8,9 @@ from typing import List, Dict, Any, Tuple
 from datetime import datetime
 import json
 import time
-import torch
 
-# Note: For production, uncomment these imports
-# from transformers import AutoTokenizer, AutoModelForCausalLM
-# import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
 from .data_ingestion import TokenSignal
 

@@ -8,6 +8,10 @@ import os
 import sys
 from pathlib import Path
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Add agent to path
 sys.path.insert(0, str(Path(__file__).parent / 'agent'))
@@ -28,7 +32,7 @@ def main():
     
     print("🔧 Configuration:")
     print(f"   Tier 1 (HuggingFace): {'MOCK' if tier1_mock else 'PRODUCTION'}")
-    print(f"   Tier 2 (Claude): {'MOCK' if tier2_mock else 'PRODUCTION'}")
+    print(f"   Tier 2 (Gemini): {'MOCK' if tier2_mock else 'PRODUCTION'}")
     print()
     
     # Initialize orchestration engine
@@ -162,12 +166,12 @@ def main():
     print("   ✓ Social Signal Ingestion (Twitter/X)")
     print("   ✓ Token Signal Generation (On-chain)")
     print("   ✓ Tier 1 Screening (HuggingFace)")
-    print("   ✓ Tier 2 Analysis (Claude)")
+    print("   ✓ Tier 2 Analysis (Gemini)")
     print("   ✓ Signal Fusion & Prioritization")
     
     print("\n💡 Production Checklist:")
     print("   [ ] Set AGENT_TIER1_MOCK=false (HuggingFace)")
-    print("   [ ] Add ANTHROPIC_API_KEY (Claude)")
+    print("   [ ] Add GEMINI_API_KEY (Google Gemini)")
     print("   [ ] Schedule x_scrapper (every 30 min)")
     print("   [ ] Configure LI.FI for trade execution")
     print("   [ ] Set up monitoring/alerting")

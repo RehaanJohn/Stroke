@@ -40,7 +40,7 @@ def run_scraper():
     try:
         # Run the scraper
         result = subprocess.run(
-            ['python', str(scraper_path)],
+            ['python3', str(scraper_path)],
             cwd=str(scraper_path.parent),
             capture_output=True,
             text=True,
