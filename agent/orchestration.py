@@ -13,6 +13,7 @@ from collections import deque
 from .data_ingestion import DataIngestion, TokenSignal
 from .local_llm_screener import LocalLLMScreener, FlaggedToken
 from .claude_analyzer import ClaudeAnalyzer, TradePlan
+from .social_monitor import SocialMonitor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -47,6 +48,7 @@ class OrchestrationEngine:
         self.data_ingestion = DataIngestion()
         self.tier1_screener = LocalLLMScreener(mock_mode=tier1_mock)
         self.tier2_analyzer = ClaudeAnalyzer(mock_mode=tier2_mock)
+        self.social_monitor = SocialMonitor()  # Twitter/X monitor
         
         # Processing queues
         self.signal_queue = deque()  # Incoming raw signals
@@ -56,6 +58,7 @@ class OrchestrationEngine:
         # Aggregated stats
         self.stats = {
             "total_signals_ingested": 0,
+            "social_signals_ingested": 0,  # New: Twitter signals
             "tier1_processed": 0,
             "tier1_flagged": 0,
             "tier2_analyzed": 0,
@@ -88,6 +91,57 @@ class OrchestrationEngine:
         self.stats["total_signals_ingested"] += len(signals)
         
         logger.info(f"Signal queue now has {len(self.signal_queue)} pending signals")
+    
+    def ingest_social_signals(self, min_urgency: int = 7, limit: int = 50):
+        """
+        Ingest Twitter/X social signals from x_scrapper database
+        
+        Args:
+            min_urgency: Minimum urgency score (1-10)
+            limit: Maximum number of signals to ingest
+        """
+        logger.info(f"Ingesting social signals (urgency >= {min_urgency})...")
+        
+        try:
+            # Get top signals from social monitor
+            social_signals = self.social_monitor.get_top_signals(
+                limit=limit,
+                min_urgency=min_urgency
+            )
+            
+            # Convert to text format for Tier 1 processing
+            signal_texts = [s['text'] for s in social_signals]
+            
+            # Add to processing queue
+            # Note: These are text signals, not TokenSignal objects
+            # They'll be processed directly by tier1_screener.screen_batch()
+            for signal in social_signals:
+                self.signal_queue.append({
+                    'text': signal['text'],
+                    'urgency': signal['urgency'],
+                    'source': 'social',
+                    'type': signal['type'],
+                    'metadata': {
+                        'username': signal['username'],
+                        'engagement': signal['engagement'],
+                        'tokens': signal['tokens'],
+                        'timestamp': signal['timestamp']
+                    }
+                })
+            
+            self.stats["social_signals_ingested"] += len(social_signals)
+            logger.info(f"Added {len(social_signals)} social signals to queue")
+            
+            return len(social_signals)
+            
+        except Exception as e:
+            logger.error(f"Error ingesting social signals: {e}")
+            self.stats["errors"].append({
+                "time": datetime.utcnow().isoformat(),
+                "component": "social_ingestion",
+                "error": str(e)
+            })
+            return 0
     
     def process_tier1_batch(self) -> List[FlaggedToken]:
         """

@@ -8,6 +8,7 @@ from typing import List, Dict, Any, Tuple
 from datetime import datetime
 import json
 import time
+import torch
 
 # Note: For production, uncomment these imports
 # from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -118,28 +119,44 @@ Your analysis:"""
     
     def _load_model(self):
         """Load Llama 3.2 3B model (production only)"""
-        logger.info("Loading Llama 3.2 3B Instruct model...")
+        logger.info("Loading Llama 3.2 3B model with authentication...")
         
-        # Uncomment for production:
-        """
         import torch
         from transformers import AutoTokenizer, AutoModelForCausalLM
+        import os
         
-        model_name = "meta-llama/Llama-3.2-3B-Instruct"
+        # Use 3B model with token authentication
+        model_name = "meta-llama/Llama-3.2-3B"
+        hf_token = os.getenv('HUGGING_FACE_TOKEN')
         
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        if not hf_token:
+            raise ValueError("HUGGING_FACE_TOKEN not found in environment. Please set it in .env file")
+        
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, token=hf_token)
+        
+        # Set pad token if not set
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+            self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
+        
+        # Use DirectML for GPU on Windows
+        try:
+            import torch_directml
+            self.device = torch_directml.device()
+            logger.info(f"Using DirectML GPU acceleration: {self.device}")
+        except ImportError:
+            self.device = "cuda" if self.use_gpu and torch.cuda.is_available() else "cpu"
+            logger.info(f"Using device: {self.device}")
+        
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=torch.float16 if self.use_gpu else torch.float32,
-            device_map="auto" if self.use_gpu else None,
+            token=hf_token,
+            torch_dtype=torch.float16,
             low_cpu_mem_usage=True
         )
         
-        self.device = "cuda" if self.use_gpu and torch.cuda.is_available() else "cpu"
-        logger.info(f"Model loaded on {self.device}")
-        """
-        
-        pass
+        self.model.to(self.device)
+        logger.info(f"✅ Model loaded successfully on {self.device}")
     
     def _format_prompt(self, signal: TokenSignal) -> str:
         """Format token signal into prompt"""
@@ -288,6 +305,103 @@ Your analysis:"""
             self.stats["total_passed"] += 1
             logger.debug(f"✓ PASSED: {signal.token_symbol}")
             return "PASS", None
+    
+    def screen_text_signals(self, signal_texts: List[str]) -> List[Dict]:
+        """
+        Screen text signals (e.g., from social media) using LLM or keywords
+        
+        Args:
+            signal_texts: List of text signals
+        
+        Returns:
+            List of dicts with screening results
+        """
+        results = []
+        
+        for i, text in enumerate(signal_texts):
+            start_time = time.time()
+            
+            if self.mock_mode:
+                # Mock mode: keyword-based urgency detection
+                text_lower = text.lower()
+                
+                urgent_keywords = [
+                    'breaking', 'urgent', 'alert', 'crash', 'dump', 'regulation',
+                    'ban', 'lawsuit', 'hack', 'exploit', 'sec', 'investigation'
+                ]
+                
+                is_urgent = any(keyword in text_lower for keyword in urgent_keywords)
+                urgency = 8 if is_urgent else 4
+                
+                if any(acc in text_lower for acc in ['@elonmusk', '@secgov', '@federalreserve']):
+                    urgency = min(10, urgency + 2)
+                
+                reasoning = f"Text signal analysis: {'High priority keywords detected' if is_urgent else 'Standard signal'}"
+            else:
+                # Production mode: use HuggingFace LLM
+                prompt = f"""Analyze this crypto market signal and determine if it indicates potential market manipulation or significant risk.
+
+Signal: {text}
+
+Respond with:
+1. URGENT or PASS
+2. Urgency score (1-10)
+3. Brief reasoning (max 50 words)
+
+Format: DECISION|SCORE|REASONING"""
+
+                inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+                inputs = {k: v.to(self.device) for k, v in inputs.items()}
+                
+                with torch.no_grad():
+                    outputs = self.model.generate(
+                        **inputs,
+                        max_new_tokens=100,
+                        temperature=0.7,
+                        do_sample=True,
+                        pad_token_id=self.tokenizer.pad_token_id
+                    )
+                
+                response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+                
+                # Extract decision from response
+                response_lower = response.lower()
+                is_urgent = 'urgent' in response_lower or 'flag' in response_lower or 'risk' in response_lower
+                
+                # Try to parse urgency score
+                urgency = 7 if is_urgent else 4
+                for word in response.split():
+                    if word.isdigit():
+                        score = int(word)
+                        if 1 <= score <= 10:
+                            urgency = score
+                            break
+                
+                reasoning = response.split('\n')[-1][:100] if '\n' in response else response[:100]
+            
+            processing_time_ms = (time.time() - start_time) * 1000
+            
+            results.append({
+                'index': i,
+                'is_urgent': is_urgent,
+                'urgency': urgency,
+                'signal_text': text,
+                'reasoning': reasoning,
+                'processing_time_ms': processing_time_ms
+            })
+            
+            # Update stats
+            self.stats["total_processed"] += 1
+            if is_urgent:
+                self.stats["total_flagged"] += 1
+            else:
+                self.stats["total_passed"] += 1
+            
+            # Log progress
+            if (i + 1) % 5 == 0:
+                logger.info(f"Processed {i + 1}/{len(signal_texts)} signals...")
+        
+        return results
     
     def screen_batch(self, signals: List[TokenSignal]) -> List[FlaggedToken]:
         """
