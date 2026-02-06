@@ -1,0 +1,31 @@
+{
+  "name": "nexus-lifi-integration",
+  "version": "1.0.0",
+  "description": "LI.FI cross-chain bridge integration for NEXUS AI agent",
+  "main": "lifi_executor.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "ts-node lifi_executor.ts",
+    "dev": "ts-node-dev --respawn lifi_executor.ts"
+  },
+  "keywords": [
+    "lifi",
+    "cross-chain",
+    "bridge",
+    "defi",
+    "arbitrum"
+  ],
+  "author": "NEXUS Team",
+  "license": "MIT",
+  "dependencies": {
+    "@lifi/sdk": "^3.0.0",
+    "viem": "^2.7.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
+  }
+}
