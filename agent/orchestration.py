@@ -296,16 +296,28 @@ class OrchestrationEngine:
         
         logger.info(f"Executing GMX SHORT for {plan.token_symbol}")
         
+        # PROACTIVE FUND MANAGEMENT: Check vault balance first
         try:
+            vault_balance = self.blockchain.get_vault_balance()
+            required_balance = plan.position_size_usd
+            
+            source_chain = 'arbitrum' # Default: same chain execution
+            
+            if vault_balance < required_balance:
+                logger.info(f"⚠️ Low vault balance on Arbitrum (${vault_balance:.2f}). Triggering bridge from treasury...")
+                # In production, this would be the chain where the agent's main treasury lives
+                source_chain = 'base' 
+            
             result = self.blockchain.execute_short(
                 index_token=plan.token_symbol,
                 collateral_usdc=int(plan.position_size_usd * 1_000_000),  # Convert to 6 decimals
                 leverage=min(plan.leverage, 10),  # Cap at 10x leverage
                 confidence=plan.confidence,
-                source_chain='arbitrum'  # Already on Arbitrum for GMX
+                source_chain=source_chain
             )
             
-            logger.info(f"✅ GMX SHORT opened: Position ID {result.get('positionId')}")
+            if result:
+                logger.info(f"✅ GMX SHORT opened: Position ID {result.get('positionId')}")
             
         except Exception as e:
             logger.error(f"GMX SHORT failed for {plan.token_symbol}: {e}")

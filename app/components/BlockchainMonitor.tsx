@@ -8,11 +8,29 @@ import { formatUnits, parseUnits } from 'viem';
 const NEXUS_VAULT_ADDRESS = process.env.NEXT_PUBLIC_NEXUS_VAULT_ADDRESS as `0x${string}`;
 const SIGNAL_ORACLE_ADDRESS = process.env.NEXT_PUBLIC_SIGNAL_ORACLE_ADDRESS as `0x${string}`;
 
+import { getRoutes, createConfig, executeRoute } from '@lifi/sdk';
+import type { Route } from '@lifi/sdk';
+
+// Initialize LI.FI once
+createConfig({ integrator: 'nexus-autonomous-agent' });
+
 // USDC addresses per chain
 const USDC_ADDRESSES: Record<number, `0x${string}`> = {
+  1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // Ethereum
+  10: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85', // Optimism
+  137: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', // Polygon
+  8453: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // Base
   42161: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // Arbitrum Mainnet
   421614: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d', // Arbitrum Sepolia
-  11155111: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // Sepolia
+};
+
+const CHAIN_NAMES: Record<number, string> = {
+  1: 'Ethereum',
+  10: 'Optimism',
+  137: 'Polygon',
+  8453: 'Base',
+  42161: 'Arbitrum',
+  421614: 'Arbitrum Sepolia'
 };
 
 // Simplified ABIs
@@ -89,6 +107,45 @@ export default function BlockchainMonitor() {
   const [depositAmount, setDepositAmount] = useState('');
   const [isApproving, setIsApproving] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
+
+  // BRIDGE STATES
+  const [sourceChainId, setSourceChainId] = useState<number>(8453); // Default to Base
+  const [bridgeQuote, setBridgeQuote] = useState<Route | null>(null);
+  const [isFetchingQuote, setIsFetchingQuote] = useState(false);
+  const [isBridging, setIsBridging] = useState(false);
+
+  // Fetch bridge quote when amount or chain changes
+  useEffect(() => {
+    const fetchQuote = async () => {
+      if (!depositAmount || parseFloat(depositAmount) <= 0 || !address || sourceChainId === chainId) {
+        setBridgeQuote(null);
+        return;
+      }
+
+      setIsFetchingQuote(true);
+      try {
+        const result = await getRoutes({
+          fromChainId: sourceChainId,
+          toChainId: 42161, // Always bridge to Arbitrum
+          fromTokenAddress: USDC_ADDRESSES[sourceChainId],
+          toTokenAddress: USDC_ADDRESSES[42161],
+          fromAmount: parseUnits(depositAmount, 6).toString(),
+          fromAddress: address,
+        });
+
+        if (result.routes && result.routes.length > 0) {
+          setBridgeQuote(result.routes[0]);
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch LI.FI quote:', error);
+      } finally {
+        setIsFetchingQuote(false);
+      }
+    };
+
+    const timer = setTimeout(fetchQuote, 500); // Debounce
+    return () => clearTimeout(timer);
+  }, [depositAmount, sourceChainId, address, chainId]);
 
   // Read vault balance
   const { data: vaultBalance, refetch: refetchBalance } = useReadContract({
@@ -462,6 +519,83 @@ export default function BlockchainMonitor() {
                 <p className="text-green-400">✓ Approved! Now you can deposit</p>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bridge Section */}
+      {isConnected && address && chainId !== 42161 && chainId !== 421614 && (
+        <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-white/10 rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">🌉 Bridge from {CHAIN_NAMES[chainId] || 'Other Chain'}</h3>
+            <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30">
+              POWERED BY LI.FI
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-sm text-gray-400">
+              You're currently on {CHAIN_NAMES[chainId]}. Select a chain to bridge USDC to Arbitrum and start trading.
+            </p>
+
+            <div className="grid grid-cols-2 gap-2">
+              {[8453, 10, 137, 1].map((id) => (
+                <button
+                  key={id}
+                  onClick={() => setSourceChainId(id)}
+                  className={`px-4 py-3 rounded-lg border text-sm transition-all ${sourceChainId === id
+                    ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+                    : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/30'
+                    }`}
+                >
+                  {CHAIN_NAMES[id]}
+                </button>
+              ))}
+            </div>
+
+            {bridgeQuote && (
+              <div className="bg-black/30 border border-white/10 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Estimated Output:</span>
+                  <span className="text-green-400 font-bold">{formatUnits(BigInt(bridgeQuote.toAmount), 6)} USDC</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Bridge Fee:</span>
+                  <span className="text-gray-300">${bridgeQuote.gasCosts?.[0]?.amountUSD || '0.50'}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Est. Time:</span>
+                  <span className="text-gray-300">~{(bridgeQuote.steps[0]?.estimate?.executionDuration || 180) / 60} mins</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Route:</span>
+                  <span className="text-blue-400">{bridgeQuote.steps[0]?.toolDetails?.name}</span>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={async () => {
+                if (!bridgeQuote) return;
+                setIsBridging(true);
+                setErrorMessage(null);
+                try {
+                  console.log('🚀 Executing LI.FI Bridge:', bridgeQuote);
+                  const result = await executeRoute(bridgeQuote);
+                  console.log('✅ Bridge Success:', result);
+                  refetchUserBalance();
+                } catch (error: any) {
+                  console.error('❌ Bridge Failed:', error);
+                  setErrorMessage(error.message || 'Bridge transaction failed');
+                } finally {
+                  setIsBridging(false);
+                }
+              }}
+              disabled={!bridgeQuote || isFetchingQuote || isBridging}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-gray-600 disabled:to-gray-500 text-white font-bold py-3 rounded-lg shadow-lg transition-all"
+            >
+              {isFetchingQuote ? 'Fetching Route...' : isBridging ? 'Bridging...' : 'Bridge to Arbitrum'}
+            </button>
           </div>
         </div>
       )}

@@ -249,6 +249,40 @@ class BlockchainIntegration:
             self.stats['execution_errors'] += 1
             return None
     
+    def get_bridge_quote(self, from_chain: str, to_chain: str, amount_usdc: int) -> Optional[Dict[str, Any]]:
+        """
+        Get a quote for bridging USDC between chains
+        
+        Args:
+            from_chain: Source chain name
+            to_chain: Destination chain name
+            amount_usdc: Amount in USDC (6 decimals)
+            
+        Returns:
+            Dict with route info if successful
+        """
+        if not self.enabled:
+            return None
+            
+        try:
+            response = requests.post(
+                f"{self.blockchain_url}/api/bridge/quote",
+                json={
+                    'fromChain': from_chain,
+                    'toChain': to_chain,
+                    'amountUSDC': amount_usdc
+                },
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                return response.json().get('route')
+            return None
+            
+        except Exception as e:
+            logger.error(f"Bridge quote error: {e}")
+            return None
+            
     def get_vault_balance(self) -> float:
         """Get vault USDC balance"""
         if not self.enabled:
