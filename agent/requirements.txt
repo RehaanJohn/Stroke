@@ -8,11 +8,11 @@ pydantic==2.10.6
 python-multipart==0.0.20
 
 # For production (LLM inference)
-# Uncomment when ready to use real models:
-# torch==2.5.1
-# transformers==4.47.1
-# accelerate==1.2.1
-# anthropic==0.42.0
+torch==2.5.1
+transformers==4.47.1
+accelerate==1.2.1
+google-genai==1.3.0
+anthropic==0.42.0
 
 # Utilities
 python-dotenv==1.0.1

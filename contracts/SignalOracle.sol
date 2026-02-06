@@ -101,7 +101,7 @@ contract SignalOracle is Ownable {
     // CONSTRUCTOR
     // ============================================
     
-    constructor(address _publisherAddress) {
+    constructor(address _publisherAddress) Ownable(msg.sender) {
         publisherAddress = _publisherAddress;
     }
     

@@ -70,11 +70,10 @@ class GeminiAnalyzer:
     RETRY_DELAYS = [3, 6, 12]  # Exponential backoff delays (seconds)
     
     # Models in order of preference (will fallback if quota exceeded)
-    # Using correct Gemini 3 model names from official documentation
     MODELS = [
-        "gemini-3-flash-preview",  # Latest Gemini 3 Flash (free, high quota)
-        "gemini-1.5-flash",         # Stable Gemini 1.5 Flash (free, high quota)
-        "gemini-1.5-pro",           # Gemini 1.5 Pro fallback (if available)
+        "gemini-2.0-flash-exp",  # Latest Gemini 2.0 Flash (free, high quota)
+        "gemini-1.5-flash",       # Stable Gemini 1.5 Flash (free, high quota)
+        "gemini-1.5-pro",         # Gemini 1.5 Pro fallback (if available)
     ]
     
     # Gemini batch analysis prompt

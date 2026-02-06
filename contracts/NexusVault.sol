@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/ISignalOracle.sol";
 import "./interfaces/IPositionRegistry.sol";
 import "./interfaces/IPriceOracle.sol";
@@ -35,8 +35,6 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
     IPriceOracle public priceOracle;
     IGMXPositionRouter public gmxPositionRouter;
     IGMXVault public gmxVault;
-    
-    address public immutable LIFI_DIAMOND;
     
     bool public paused;
     uint256 public constant MAX_POSITION_PERCENT = 20; // Max 20% of vault in one position
@@ -82,7 +80,6 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
     struct BridgeBackRequest {
         string destinationChain;
         address recipient;
-        bytes lifiCalldata;
         uint256 timestamp;
     }
     
@@ -108,6 +105,13 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         string indexed sourceChain,
         uint256 amountUSDC,
         bytes32 lifiTransferId
+    );
+    
+    event LiFiBridgeExecuted(
+        bytes32 indexed transactionId,
+        string sourceChain,
+        uint256 destinationChainId,
+        uint256 amountUSDC
     );
     
     event ShortExecuted(
@@ -160,10 +164,12 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         bool isProfit
     );
     
+    event Deposit(address indexed user, uint256 amount);
     event TokenApproved(address indexed token, bool approved);
     event ChainApproved(string chain, bool approved);
     event AgentUpdated(address indexed oldAgent, address indexed newAgent);
     event EmergencyWithdraw(address indexed token, uint256 amount);
+    event PositionCloseRequested(uint256 indexed positionId, uint256 minExitPrice);
     
     // ============================================
     // MODIFIERS
@@ -190,9 +196,8 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         address _positionRegistry,
         address _priceOracle,
         address _gmxPositionRouter,
-        address _gmxVault,
-        address _lifiDiamond
-    ) {
+        address _gmxVault
+    ) Ownable(msg.sender) {
         USDC = _usdc;
         agentAddress = _agentAddress;
         signalOracle = ISignalOracle(_signalOracle);
@@ -200,7 +205,6 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         priceOracle = IPriceOracle(_priceOracle);
         gmxPositionRouter = IGMXPositionRouter(_gmxPositionRouter);
         gmxVault = IGMXVault(_gmxVault);
-        LIFI_DIAMOND = _lifiDiamond;
         
         // Only Arbitrum is approved (GMX is only on Arbitrum)
         approvedChains["arbitrum"] = true;
@@ -211,26 +215,32 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
     // ============================================
     
     /**
-     * @notice Execute a cross-chain short position (LI.FI bridge + GMX short)
-     * @dev This function handles TWO scenarios:
-     *      1. CROSS-CHAIN: Funds are on another chain → bridge via LI.FI first
-     *      2. SAME-CHAIN: Funds already on Arbitrum → open GMX short directly
+     * @notice Deposit USDC into the vault
+     * @param amount Amount of USDC to deposit (6 decimals)
+     */
+    function deposit(uint256 amount) external whenNotPaused nonReentrant {
+        require(amount > 0, "Amount must be > 0");
+        IERC20(USDC).transferFrom(msg.sender, address(this), amount);
+        emit Deposit(msg.sender, amount);
+    }
+    
+    
+    /**
+     * @notice Execute a GMX short position (USDC must already be on Arbitrum)
+     * @dev Cross-chain bridging is handled off-chain by LI.FI SDK (TypeScript)
+     *      This contract only opens GMX shorts with USDC already on Arbitrum
      * 
      * @param indexToken Token to short (e.g., WETH, WBTC)
      * @param amountUSDC Collateral amount in USDC (6 decimals)
      * @param leverage Leverage multiplier (1-50x, typically 2-10x)
      * @param acceptablePrice Maximum entry price for short (30 decimals)
-     * @param sourceChain Chain where funds originate ("arbitrum" for direct execution)
-     * @param lifiCalldata LI.FI bridge calldata (empty if already on Arbitrum)
      * @return positionId The ID of the created position
      */
     function executeShort(
         address indexToken,
         uint256 amountUSDC,
         uint256 leverage,
-        uint256 acceptablePrice,
-        string calldata sourceChain,
-        bytes calldata lifiCalldata
+        uint256 acceptablePrice
     ) 
         external 
         payable
@@ -258,45 +268,18 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         require(confidenceScore >= MIN_CONFIDENCE_SCORE, "Confidence too low");
         require(signalCount >= 2, "Need at least 2 signals");
         
-        // 4. If cross-chain, bridge via LI.FI first
-        if (keccak256(bytes(sourceChain)) != keccak256(bytes("arbitrum"))) {
-            _executeCrossChainBridge(amountUSDC, sourceChain, lifiCalldata);
-            // Position will be opened in callback after bridge completes
-            // Store pending position data for callback
-            emit BridgeInitiated(sourceChain, amountUSDC, bytes32(0)); // LI.FI transfer ID would be extracted from event
-            
-            // Return early - actual GMX short opens in callback
-            return 0; // Temp ID, real ID assigned after bridge
-        }
-        
-        // 5. If already on Arbitrum, open GMX short directly
+        // 4. Open GMX short (USDC must already be on Arbitrum)
         positionId = _openGMXShort(
             indexToken,
             amountUSDC,
             leverage,
             acceptablePrice,
-            confidenceScore,
-            sourceChain
+            confidenceScore
         );
         
         return positionId;
     }
     
-    /**
-     * @notice Internal function to execute LI.FI cross-chain bridge
-     */
-    function _executeCrossChainBridge(
-        uint256 amountUSDC,
-        string memory sourceChain,
-        bytes memory lifiCalldata
-    ) internal {
-        // Approve USDC to LI.FI Diamond
-        IERC20(USDC).approve(LIFI_DIAMOND, amountUSDC);
-        
-        // Execute LI.FI bridge
-        (bool success, ) = LIFI_DIAMOND.call(lifiCalldata);
-        require(success, "LiFi bridge failed");
-    }
     
     /**
      * @notice Internal function to open GMX perpetual short
@@ -307,8 +290,7 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         uint256 collateralAmount,
         uint256 leverage,
         uint256 acceptablePrice,
-        uint16 confidenceScore,
-        string memory sourceChain
+        uint16 confidenceScore
     ) internal returns (uint256 positionId) {
         // Calculate position size in USD (GMX uses 30 decimals)
         // collateralAmount is in USDC (6 decimals), convert to 30 decimals
@@ -349,7 +331,7 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
             entryTimestamp: block.timestamp,
             gmxPositionKey: gmxKey,
             isOpen: true,
-            sourceChain: sourceChain
+            sourceChain: "arbitrum"
         });
         
         // Map GMX key to position ID
@@ -381,21 +363,14 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
     }
     
     /**
-     * @notice Close a GMX short position and optionally bridge profits back
+     * @notice Close a GMX short position
+     * @dev Bridging profits back is handled off-chain by LI.FI SDK
      * @param positionId Position to close
      * @param minExitPrice Minimum acceptable exit price (30 decimals)
-     * @param bridgeBack Whether to bridge profits back to source chain
-     * @param destinationChain Chain to bridge to (if bridgeBack is true)
-     * @param recipient Address to receive funds on destination chain
-     * @param lifiCalldata LI.FI bridge calldata (if bridgeBack is true)
      */
     function closePosition(
         uint256 positionId,
-        uint256 minExitPrice,
-        bool bridgeBack,
-        string calldata destinationChain,
-        address recipient,
-        bytes calldata lifiCalldata
+        uint256 minExitPrice
     ) 
         external
         payable
@@ -417,7 +392,7 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
             position.positionSizeUSD, // Collateral to withdraw (all of it)
             position.positionSizeUSD, // Position size to close (all of it)
             false,                    // isLong = false (SHORT)
-            address(this),            // Receiver
+            address(this),            // Receiver (USDC stays in vault)
             minExitPrice,             // Min acceptable exit price for short
             0,                        // minOut
             msg.value,                // Execution fee
@@ -425,20 +400,13 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
             address(this)             // Callback target
         );
         
-        // Store bridge back request if needed
-        if (bridgeBack) {
-            pendingBridgeBack[positionId] = BridgeBackRequest({
-                destinationChain: destinationChain,
-                recipient: recipient,
-                lifiCalldata: lifiCalldata,
-                timestamp: block.timestamp
-            });
-        }
-        
         // Map GMX key to position ID for callback
         gmxKeyToPositionId[gmxKey] = positionId;
         
+        emit PositionCloseRequested(positionId, minExitPrice);
+        
         // Position will be marked closed in GMX callback
+        // Agent can withdraw USDC manually if needed for cross-chain
     }
     
     /**
@@ -493,36 +461,7 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         
         emit PositionClosed(positionId, exitPrice, pnlUSDC, finalUSDC);
         
-        // Bridge back if requested
-        BridgeBackRequest memory bridgeReq = pendingBridgeBack[positionId];
-        if (bridgeReq.timestamp > 0) {
-            _executeBridgeBack(positionId, finalUSDC, bridgeReq);
-        }
-    }
-    
-    /**
-     * @notice Internal function to bridge profits back via LI.FI
-     */
-    function _executeBridgeBack(
-        uint256 positionId,
-        uint256 amount,
-        BridgeBackRequest memory bridgeReq
-    ) internal {
-        // Approve USDC to LI.FI Diamond
-        IERC20(USDC).approve(LIFI_DIAMOND, amount);
-        
-        // Execute LI.FI bridge
-        (bool success, ) = LIFI_DIAMOND.call(bridgeReq.lifiCalldata);
-        require(success, "Bridge back failed");
-        
-        emit BridgeBackInitiated(
-            positionId,
-            bridgeReq.destinationChain,
-            amount
-        );
-        
-        // Clear pending bridge
-        delete pendingBridgeBack[positionId];
+        // USDC remains in vault - agent can withdraw if needed
     }
     
     // ============================================
@@ -591,14 +530,13 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
     
     /**
      * @notice Buy memecoin dip after rug pull for dead cat bounce
-     * @dev Bridges to memecoin's chain, buys on DEX, sets take-profit/stop-loss
+     * @dev Bridging is handled off-chain by LI.FI SDK
      * @param token Memecoin address on destination chain
      * @param chain Chain where memecoin lives (e.g., "base", "ethereum")
      * @param amountUSDC USDC to spend on dip buy
      * @param minTokensOut Minimum tokens expected from swap
      * @param takeProfitPrice Target sell price for bounce (+30-50%)
      * @param stopLossPrice Stop loss price (-15-20%)
-     * @param lifiCalldata LI.FI bridge + swap calldata
      * @return positionId Dip buy position ID
      */
     function executeDipBuy(
@@ -607,8 +545,7 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         uint256 amountUSDC,
         uint256 minTokensOut,
         uint256 takeProfitPrice,
-        uint256 stopLossPrice,
-        bytes calldata lifiCalldata
+        uint256 stopLossPrice
     ) 
         external 
         onlyAgent 
@@ -625,10 +562,8 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         // Validate take-profit and stop-loss
         require(takeProfitPrice > stopLossPrice, "Invalid TP/SL prices");
         
-        // If not on destination chain, bridge via LI.FI
-        if (keccak256(bytes(chain)) != keccak256(bytes("arbitrum"))) {
-            _executeCrossChainBridge(amountUSDC, chain, lifiCalldata);
-        }
+        // Bridging handled off-chain by LI.FI SDK
+        // Contract only handles execution on current chain
         
         // Create dip buy position record
         dipBuyCounter++;
@@ -694,10 +629,8 @@ contract NexusVault is Ownable, ReentrancyGuard, IGMXPositionRouterCallbackRecei
         require(pos.isOpen, "Position not open");
         require(pos.entryPrice > 0, "Position not executed yet");
         
-        // Execute sell on destination chain + bridge back via LI.FI
-        // LI.FI handles: Token → USDC swap + bridge to Arbitrum
-        (bool success, ) = LIFI_DIAMOND.call(lifiCalldata);
-        require(success, "LiFi sell failed");
+        // Selling and bridging back handled off-chain by LI.FI SDK
+        // Contract only tracks P&L
         
         // Calculate P&L
         // For dip buys: profit when exitPrice > entryPrice

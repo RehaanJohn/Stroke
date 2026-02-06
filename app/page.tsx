@@ -5,6 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import BlockchainMonitor from './components/BlockchainMonitor';
 
 interface Tweet {
   id: number;
@@ -115,7 +116,7 @@ export default function Home() {
           </div>
 
           {/* Visual Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {[
               { label: "Multi-Signal Fusion", value: "5+", desc: "Signal categories" },
               { label: "Cross-Chain", value: "4+", desc: "EVM chains supported" },
@@ -130,6 +131,14 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {/* Blockchain Monitor */}
+          {isConnected && (
+            <div className="mb-20">
+              <h2 className="text-2xl font-bold text-white mb-6">Live Vault Status</h2>
+              <BlockchainMonitor />
+            </div>
+          )}
 
           {/* How It Works */}
           <div className="mb-20">

@@ -159,9 +159,8 @@ contract PositionRegistry is Ownable {
     // CONSTRUCTOR
     // ============================================
     
-    constructor(address _nexusVault) {
-        require(_nexusVault != address(0), "Invalid vault");
-        nexusVault = _nexusVault;
+    constructor() Ownable(msg.sender) {
+        // NexusVault will be set after deployment via setNexusVault()
     }
     
     // ============================================

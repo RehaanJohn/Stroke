@@ -1,0 +1,956 @@
+{
+  "address": "0xDc4D27e9873799f2997E2B7eAC38A135c3C4A559",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_publisherAddress",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldPublisher",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newPublisher",
+          "type": "address"
+        }
+      ],
+      "name": "PublisherUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "count",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "timestamp",
+          "type": "uint64"
+        }
+      ],
+      "name": "SignalBatchPublished",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum SignalOracle.SignalType",
+          "name": "signalType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "score",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "timestamp",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "signalId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "SignalPublished",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "totalScore",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "signalCount",
+          "type": "uint8"
+        }
+      ],
+      "name": "SignalsAggregated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "SIGNAL_CLEANUP_WINDOW",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SIGNAL_EXPIRY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        }
+      ],
+      "name": "cleanExpiredSignals",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        }
+      ],
+      "name": "getConfidenceScore",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "totalScore",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint8",
+          "name": "signalCount",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        }
+      ],
+      "name": "getRecentSignalIds",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        }
+      ],
+      "name": "getSignalHistory",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum SignalOracle.SignalType",
+              "name": "signalType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "chain",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "score",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint64",
+              "name": "timestamp",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "metadataHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "publisher",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct SignalOracle.Signal[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        },
+        {
+          "internalType": "enum SignalOracle.SignalType",
+          "name": "signalType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getSignalsByType",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum SignalOracle.SignalType",
+              "name": "signalType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "chain",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "score",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint64",
+              "name": "timestamp",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "metadataHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "publisher",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct SignalOracle.Signal[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "globalSignalCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nexusVault",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum SignalOracle.SignalType",
+          "name": "signalType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        },
+        {
+          "internalType": "uint8",
+          "name": "score",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "metadataHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "publishSignal",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "signalId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum SignalOracle.SignalType",
+              "name": "signalType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "chain",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "score",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint64",
+              "name": "timestamp",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "metadataHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "publisher",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct SignalOracle.Signal[]",
+          "name": "signals",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "publishSignalBatch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "publisherAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_nexusVault",
+          "type": "address"
+        }
+      ],
+      "name": "setNexusVault",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newPublisher",
+          "type": "address"
+        }
+      ],
+      "name": "setPublisher",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "signalHistory",
+      "outputs": [
+        {
+          "internalType": "enum SignalOracle.SignalType",
+          "name": "signalType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "chain",
+          "type": "string"
+        },
+        {
+          "internalType": "uint8",
+          "name": "score",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint64",
+          "name": "timestamp",
+          "type": "uint64"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "metadataHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "publisher",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "signalIds",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x948aaec905010bb810694249cfba32c20b8cae6ffd86574fe18f963915906f1e",
+  "receipt": {
+    "to": null,
+    "from": "0x670298e73c5E6735E1fdBeD858Be1d6A26db00b1",
+    "contractAddress": "0xDc4D27e9873799f2997E2B7eAC38A135c3C4A559",
+    "transactionIndex": 1,
+    "gasUsed": "2322848",
+    "logsBloom": "0x01000000000000000000000000000000000000000000000000800000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000020000000000000000000800000000002000000000000000000000400002000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x73da1821bf19ea6a741a52a16bb4dcf71eb5986c9add8032e5035bd72749b58d",
+    "transactionHash": "0x948aaec905010bb810694249cfba32c20b8cae6ffd86574fe18f963915906f1e",
+    "logs": [
+      {
+        "transactionIndex": 1,
+        "blockNumber": 240330042,
+        "transactionHash": "0x948aaec905010bb810694249cfba32c20b8cae6ffd86574fe18f963915906f1e",
+        "address": "0xDc4D27e9873799f2997E2B7eAC38A135c3C4A559",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000670298e73c5e6735e1fdbed858be1d6a26db00b1"
+        ],
+        "data": "0x",
+        "logIndex": 0,
+        "blockHash": "0x73da1821bf19ea6a741a52a16bb4dcf71eb5986c9add8032e5035bd72749b58d"
+      }
+    ],
+    "blockNumber": 240330042,
+    "cumulativeGasUsed": "2322848",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x670298e73c5E6735E1fdBeD858Be1d6A26db00b1"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "6c7e60ad8270cfe050eed03d015941bf",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_publisherAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldPublisher\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newPublisher\",\"type\":\"address\"}],\"name\":\"PublisherUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"count\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"name\":\"SignalBatchPublished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"enum SignalOracle.SignalType\",\"name\":\"signalType\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"score\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"signalId\",\"type\":\"bytes32\"}],\"name\":\"SignalPublished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"totalScore\",\"type\":\"uint16\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"signalCount\",\"type\":\"uint8\"}],\"name\":\"SignalsAggregated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"SIGNAL_CLEANUP_WINDOW\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"SIGNAL_EXPIRY\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"}],\"name\":\"cleanExpiredSignals\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"}],\"name\":\"getConfidenceScore\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"totalScore\",\"type\":\"uint16\"},{\"internalType\":\"uint8\",\"name\":\"signalCount\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"}],\"name\":\"getRecentSignalIds\",\"outputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"}],\"name\":\"getSignalHistory\",\"outputs\":[{\"components\":[{\"internalType\":\"enum SignalOracle.SignalType\",\"name\":\"signalType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"score\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"metadataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"publisher\",\"type\":\"address\"}],\"internalType\":\"struct SignalOracle.Signal[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"internalType\":\"enum SignalOracle.SignalType\",\"name\":\"signalType\",\"type\":\"uint8\"}],\"name\":\"getSignalsByType\",\"outputs\":[{\"components\":[{\"internalType\":\"enum SignalOracle.SignalType\",\"name\":\"signalType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"score\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"metadataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"publisher\",\"type\":\"address\"}],\"internalType\":\"struct SignalOracle.Signal[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"globalSignalCounter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"nexusVault\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"enum SignalOracle.SignalType\",\"name\":\"signalType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"score\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"metadataHash\",\"type\":\"bytes32\"}],\"name\":\"publishSignal\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"signalId\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"enum SignalOracle.SignalType\",\"name\":\"signalType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"score\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"metadataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"publisher\",\"type\":\"address\"}],\"internalType\":\"struct SignalOracle.Signal[]\",\"name\":\"signals\",\"type\":\"tuple[]\"}],\"name\":\"publishSignalBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"publisherAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_nexusVault\",\"type\":\"address\"}],\"name\":\"setNexusVault\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newPublisher\",\"type\":\"address\"}],\"name\":\"setPublisher\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"signalHistory\",\"outputs\":[{\"internalType\":\"enum SignalOracle.SignalType\",\"name\":\"signalType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"chain\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"score\",\"type\":\"uint8\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"metadataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"publisher\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"signalIds\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Provides verifiable, auditable record of all signals that trigger shorts\",\"errors\":{\"OwnableInvalidOwner(address)\":[{\"details\":\"The owner is not a valid owner account. (eg. `address(0)`)\"}],\"OwnableUnauthorizedAccount(address)\":[{\"details\":\"The caller account is not authorized to perform an operation.\"}]},\"kind\":\"dev\",\"methods\":{\"getConfidenceScore(address,string)\":{\"params\":{\"chain\":\"Chain where token exists\",\"tokenAddress\":\"Token to check\"},\"returns\":{\"signalCount\":\"Number of recent signals\",\"totalScore\":\"Sum of all recent signal scores\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"publishSignal(uint8,address,string,uint8,bytes32)\":{\"params\":{\"chain\":\"Chain where token exists\",\"metadataHash\":\"IPFS hash of full signal data\",\"score\":\"Signal strength (0-100)\",\"signalType\":\"Type of signal\",\"tokenAddress\":\"Token being signaled\"}},\"publishSignalBatch((uint8,address,string,uint8,uint64,bytes32,address)[])\":{\"params\":{\"signals\":\"Array of signals to publish\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"SignalOracle\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"cleanExpiredSignals(address,string)\":{\"notice\":\"Clean up expired signals to save gas on reads\"},\"getConfidenceScore(address,string)\":{\"notice\":\"Get aggregated confidence score for a token\"},\"getRecentSignalIds(address,string)\":{\"notice\":\"Get recent signal IDs for position recording\"},\"getSignalHistory(address,string)\":{\"notice\":\"Get all signals for a token\"},\"getSignalsByType(address,string,uint8)\":{\"notice\":\"Get signals by type\"},\"publishSignal(uint8,address,string,uint8,bytes32)\":{\"notice\":\"Publish a single signal\"},\"publishSignalBatch((uint8,address,string,uint8,uint64,bytes32,address)[])\":{\"notice\":\"Publish multiple signals in one transaction (gas efficient)\"}},\"notice\":\"Publishes and aggregates AI agent signals on-chain\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/SignalOracle.sol\":\"SignalOracle\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {Context} from \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * The initial owner is set to the address provided by the deployer. This can\\n * later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    /**\\n     * @dev The caller account is not authorized to perform an operation.\\n     */\\n    error OwnableUnauthorizedAccount(address account);\\n\\n    /**\\n     * @dev The owner is not a valid owner account. (eg. `address(0)`)\\n     */\\n    error OwnableInvalidOwner(address owner);\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the address provided by the deployer as the initial owner.\\n     */\\n    constructor(address initialOwner) {\\n        if (initialOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(initialOwner);\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        if (owner() != _msgSender()) {\\n            revert OwnableUnauthorizedAccount(_msgSender());\\n        }\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        if (newOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n\\n    function _contextSuffixLength() internal view virtual returns (uint256) {\\n        return 0;\\n    }\\n}\\n\",\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\"},\"contracts/SignalOracle.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.20;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\n\\n/**\\n * @title SignalOracle\\n * @notice Publishes and aggregates AI agent signals on-chain\\n * @dev Provides verifiable, auditable record of all signals that trigger shorts\\n */\\ncontract SignalOracle is Ownable {\\n    // ============================================\\n    // ENUMS & STRUCTS\\n    // ============================================\\n    \\n    enum SignalType {\\n        INSIDER_WALLET_DUMP,\\n        LIQUIDITY_REMOVAL,\\n        TWITTER_ENGAGEMENT_DROP,\\n        TWITTER_SENTIMENT_NEGATIVE,\\n        GOVERNANCE_BEARISH,\\n        GITHUB_COMMIT_DROP,\\n        DEVELOPER_EXODUS,\\n        WHALE_ALERT,\\n        REGULATORY_RISK,\\n        MACRO_EVENT,\\n        INSTITUTIONAL_MOVE,\\n        SENTIMENT_SHIFT\\n    }\\n    \\n    struct Signal {\\n        SignalType signalType;\\n        address tokenAddress;\\n        string chain;\\n        uint8 score; // 0-100\\n        uint64 timestamp;\\n        bytes32 metadataHash; // IPFS hash of full metadata\\n        address publisher;\\n    }\\n    \\n    // ============================================\\n    // STATE VARIABLES\\n    // ============================================\\n    \\n    address public publisherAddress; // Off-chain AI agent\\n    address public nexusVault;\\n    \\n    // tokenKey => array of signals\\n    // tokenKey = keccak256(abi.encodePacked(tokenAddress, chain))\\n    mapping(bytes32 => Signal[]) public signalHistory;\\n    \\n    // Global signal counter for unique IDs\\n    mapping(bytes32 => bytes32[]) public signalIds;\\n    uint256 public globalSignalCounter;\\n    \\n    uint256 public constant SIGNAL_EXPIRY = 24 hours;\\n    uint256 public constant SIGNAL_CLEANUP_WINDOW = 7 days;\\n    \\n    // ============================================\\n    // EVENTS\\n    // ============================================\\n    \\n    event SignalPublished(\\n        address indexed token,\\n        string chain,\\n        SignalType signalType,\\n        uint8 score,\\n        uint64 timestamp,\\n        bytes32 indexed signalId\\n    );\\n    \\n    event SignalBatchPublished(\\n        uint256 count,\\n        uint64 timestamp\\n    );\\n    \\n    event SignalsAggregated(\\n        address indexed token,\\n        string chain,\\n        uint16 totalScore,\\n        uint8 signalCount\\n    );\\n    \\n    event PublisherUpdated(address indexed oldPublisher, address indexed newPublisher);\\n    \\n    // ============================================\\n    // MODIFIERS\\n    // ============================================\\n    \\n    modifier onlyPublisher() {\\n        require(msg.sender == publisherAddress, \\\"Not authorized publisher\\\");\\n        _;\\n    }\\n    \\n    modifier onlyVault() {\\n        require(msg.sender == nexusVault, \\\"Not authorized vault\\\");\\n        _;\\n    }\\n    \\n    // ============================================\\n    // CONSTRUCTOR\\n    // ============================================\\n    \\n    constructor(address _publisherAddress) Ownable(msg.sender) {\\n        publisherAddress = _publisherAddress;\\n    }\\n    \\n    // ============================================\\n    // CORE FUNCTIONS\\n    // ============================================\\n    \\n    /**\\n     * @notice Publish a single signal\\n     * @param signalType Type of signal\\n     * @param tokenAddress Token being signaled\\n     * @param chain Chain where token exists\\n     * @param score Signal strength (0-100)\\n     * @param metadataHash IPFS hash of full signal data\\n     */\\n    function publishSignal(\\n        SignalType signalType,\\n        address tokenAddress,\\n        string calldata chain,\\n        uint8 score,\\n        bytes32 metadataHash\\n    ) \\n        external \\n        onlyPublisher \\n        returns (bytes32 signalId)\\n    {\\n        require(score <= 100, \\\"Invalid score\\\");\\n        \\n        bytes32 tokenKey = keccak256(abi.encodePacked(tokenAddress, chain));\\n        \\n        Signal memory newSignal = Signal({\\n            signalType: signalType,\\n            tokenAddress: tokenAddress,\\n            chain: chain,\\n            score: score,\\n            timestamp: uint64(block.timestamp),\\n            metadataHash: metadataHash,\\n            publisher: msg.sender\\n        });\\n        \\n        signalHistory[tokenKey].push(newSignal);\\n        \\n        // Generate unique signal ID\\n        globalSignalCounter++;\\n        signalId = keccak256(abi.encodePacked(\\n            globalSignalCounter,\\n            tokenAddress,\\n            chain,\\n            block.timestamp\\n        ));\\n        signalIds[tokenKey].push(signalId);\\n        \\n        emit SignalPublished(\\n            tokenAddress,\\n            chain,\\n            signalType,\\n            score,\\n            uint64(block.timestamp),\\n            signalId\\n        );\\n        \\n        return signalId;\\n    }\\n    \\n    /**\\n     * @notice Publish multiple signals in one transaction (gas efficient)\\n     * @param signals Array of signals to publish\\n     */\\n    function publishSignalBatch(Signal[] calldata signals) \\n        external \\n        onlyPublisher \\n    {\\n        require(signals.length > 0, \\\"Empty batch\\\");\\n        require(signals.length <= 50, \\\"Batch too large\\\"); // Gas limit\\n        \\n        for (uint256 i = 0; i < signals.length; i++) {\\n            Signal memory signal = signals[i];\\n            require(signal.score <= 100, \\\"Invalid score\\\");\\n            \\n            bytes32 tokenKey = keccak256(abi.encodePacked(\\n                signal.tokenAddress,\\n                signal.chain\\n            ));\\n            \\n            Signal memory newSignal = Signal({\\n                signalType: signal.signalType,\\n                tokenAddress: signal.tokenAddress,\\n                chain: signal.chain,\\n                score: signal.score,\\n                timestamp: uint64(block.timestamp),\\n                metadataHash: signal.metadataHash,\\n                publisher: msg.sender\\n            });\\n            \\n            signalHistory[tokenKey].push(newSignal);\\n            \\n            // Generate signal ID\\n            globalSignalCounter++;\\n            bytes32 signalId = keccak256(abi.encodePacked(\\n                globalSignalCounter,\\n                signal.tokenAddress,\\n                signal.chain,\\n                block.timestamp\\n            ));\\n            signalIds[tokenKey].push(signalId);\\n            \\n            emit SignalPublished(\\n                signal.tokenAddress,\\n                signal.chain,\\n                signal.signalType,\\n                signal.score,\\n                uint64(block.timestamp),\\n                signalId\\n            );\\n        }\\n        \\n        emit SignalBatchPublished(signals.length, uint64(block.timestamp));\\n    }\\n    \\n    // ============================================\\n    // VIEW FUNCTIONS\\n    // ============================================\\n    \\n    /**\\n     * @notice Get aggregated confidence score for a token\\n     * @param tokenAddress Token to check\\n     * @param chain Chain where token exists\\n     * @return totalScore Sum of all recent signal scores\\n     * @return signalCount Number of recent signals\\n     */\\n    function getConfidenceScore(\\n        address tokenAddress,\\n        string calldata chain\\n    ) \\n        external \\n        view \\n        returns (uint16 totalScore, uint8 signalCount) \\n    {\\n        bytes32 tokenKey = keccak256(abi.encodePacked(tokenAddress, chain));\\n        Signal[] memory signals = signalHistory[tokenKey];\\n        \\n        uint64 cutoffTime = uint64(block.timestamp) - uint64(SIGNAL_EXPIRY);\\n        \\n        for (uint256 i = 0; i < signals.length; i++) {\\n            if (signals[i].timestamp > cutoffTime) {\\n                totalScore += signals[i].score;\\n                signalCount++;\\n            }\\n        }\\n        \\n        return (totalScore, signalCount);\\n    }\\n    \\n    /**\\n     * @notice Get recent signal IDs for position recording\\n     */\\n    function getRecentSignalIds(\\n        address tokenAddress,\\n        string calldata chain\\n    ) \\n        external \\n        view \\n        returns (bytes32[] memory) \\n    {\\n        bytes32 tokenKey = keccak256(abi.encodePacked(tokenAddress, chain));\\n        bytes32[] memory allIds = signalIds[tokenKey];\\n        \\n        // Count recent signals\\n        Signal[] memory signals = signalHistory[tokenKey];\\n        uint64 cutoffTime = uint64(block.timestamp) - uint64(SIGNAL_EXPIRY);\\n        \\n        uint256 recentCount = 0;\\n        for (uint256 i = 0; i < signals.length; i++) {\\n            if (signals[i].timestamp > cutoffTime) {\\n                recentCount++;\\n            }\\n        }\\n        \\n        // Return only recent IDs\\n        bytes32[] memory recentIds = new bytes32[](recentCount);\\n        uint256 index = 0;\\n        \\n        for (uint256 i = 0; i < signals.length; i++) {\\n            if (signals[i].timestamp > cutoffTime && index < recentCount) {\\n                recentIds[index] = allIds[i];\\n                index++;\\n            }\\n        }\\n        \\n        return recentIds;\\n    }\\n    \\n    /**\\n     * @notice Get all signals for a token\\n     */\\n    function getSignalHistory(\\n        address tokenAddress,\\n        string calldata chain\\n    ) \\n        external \\n        view \\n        returns (Signal[] memory) \\n    {\\n        bytes32 tokenKey = keccak256(abi.encodePacked(tokenAddress, chain));\\n        return signalHistory[tokenKey];\\n    }\\n    \\n    /**\\n     * @notice Get signals by type\\n     */\\n    function getSignalsByType(\\n        address tokenAddress,\\n        string calldata chain,\\n        SignalType signalType\\n    ) \\n        external \\n        view \\n        returns (Signal[] memory) \\n    {\\n        bytes32 tokenKey = keccak256(abi.encodePacked(tokenAddress, chain));\\n        Signal[] memory allSignals = signalHistory[tokenKey];\\n        \\n        // Count matching signals\\n        uint256 matchCount = 0;\\n        for (uint256 i = 0; i < allSignals.length; i++) {\\n            if (allSignals[i].signalType == signalType) {\\n                matchCount++;\\n            }\\n        }\\n        \\n        // Populate result\\n        Signal[] memory result = new Signal[](matchCount);\\n        uint256 index = 0;\\n        for (uint256 i = 0; i < allSignals.length; i++) {\\n            if (allSignals[i].signalType == signalType) {\\n                result[index] = allSignals[i];\\n                index++;\\n            }\\n        }\\n        \\n        return result;\\n    }\\n    \\n    // ============================================\\n    // ADMIN FUNCTIONS\\n    // ============================================\\n    \\n    function setPublisher(address newPublisher) external onlyOwner {\\n        require(newPublisher != address(0), \\\"Invalid publisher\\\");\\n        address oldPublisher = publisherAddress;\\n        publisherAddress = newPublisher;\\n        emit PublisherUpdated(oldPublisher, newPublisher);\\n    }\\n    \\n    function setNexusVault(address _nexusVault) external onlyOwner {\\n        require(_nexusVault != address(0), \\\"Invalid vault\\\");\\n        nexusVault = _nexusVault;\\n    }\\n    \\n    /**\\n     * @notice Clean up expired signals to save gas on reads\\n     */\\n    function cleanExpiredSignals(\\n        address tokenAddress,\\n        string calldata chain\\n    ) \\n        external \\n    {\\n        bytes32 tokenKey = keccak256(abi.encodePacked(tokenAddress, chain));\\n        Signal[] storage signals = signalHistory[tokenKey];\\n        \\n        uint64 cleanupCutoff = uint64(block.timestamp) - uint64(SIGNAL_CLEANUP_WINDOW);\\n        \\n        // Remove signals older than cleanup window\\n        uint256 i = 0;\\n        while (i < signals.length) {\\n            if (signals[i].timestamp < cleanupCutoff) {\\n                // Swap with last element and pop\\n                signals[i] = signals[signals.length - 1];\\n                signals.pop();\\n            } else {\\n                i++;\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xf321378bd4d99a1cac55173aab1248ee1c17f7e61e0d612731dd42c779151633\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60806040523480156200001157600080fd5b506040516200268d3803806200268d8339810160408190526200003491620000dd565b33806200005b57604051631e4fbdf760e01b81526000600482015260240160405180910390fd5b62000066816200008d565b50600180546001600160a01b0319166001600160a01b03929092169190911790556200010f565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b600060208284031215620000f057600080fd5b81516001600160a01b03811681146200010857600080fd5b9392505050565b61256e806200011f6000396000f3fe608060405234801561001057600080fd5b50600436106101215760003560e01c80638da5cb5b116100ad578063d4b75f3b11610071578063d4b75f3b14610273578063daed59f214610286578063e23961e0146102ac578063f2fde38b146102bf578063fa57f203146102d257600080fd5b80638da5cb5b146102095780639e6fcbd81461021a578063a840a0fd1461022d578063b7417d691461024d578063cab636611461026057600080fd5b80634bfe0f76116100f45780634bfe0f76146101a657806355629da2146101b9578063674c48d6146101ce578063715018a6146101ee5780637d2f1c47146101f657600080fd5b806312f84863146101265780631d580b771461015a57806336516a8a1461017157806349c81c871461019c575b600080fd5b610139610134366004611b2b565b6102dc565b6040805161ffff909316835260ff9091166020830152015b60405180910390f35b61016360055481565b604051908152602001610151565b600154610184906001600160a01b031681565b6040516001600160a01b039091168152602001610151565b61016362093a8081565b600254610184906001600160a01b031681565b6101cc6101c7366004611b7d565b610539565b005b6101e16101dc366004611b2b565b610953565b6040516101519190611c79565b6101cc610b04565b6101cc610204366004611d48565b610b18565b6000546001600160a01b0316610184565b610163610228366004611d8a565b610b88565b61024061023b366004611b2b565b610ea1565b6040516101519190611e07565b6101e161025b366004611e4b565b611227565b6101cc61026e366004611d48565b611590565b610163610281366004611eaf565b611634565b610299610294366004611eaf565b611665565b6040516101519796959493929190611ed1565b6101cc6102ba366004611b2b565b61176c565b6101cc6102cd366004611d48565b6119be565b6101636201518081565b60008060008585856040516020016102f693929190611f35565b60408051601f19818403018152828252805160209182012060008181526003835283812080548085028701850190955284865291955093929091849084015b82821015610483576000848152602090206040805160e08101909152600584029091018054829060ff16600b81111561037057610370611bf1565b600b81111561038157610381611bf1565b8152815461010090046001600160a01b031660208201526001820180546040909201916103ad90611f5c565b80601f01602080910402602001604051908101604052809291908181526020018280546103d990611f5c565b80156104265780601f106103fb57610100808354040283529160200191610426565b820191906000526020600020905b81548152906001019060200180831161040957829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b03166080909101529082526001929092019101610335565b5050505090506000620151804261049a9190611fac565b905060005b825181101561052d57816001600160401b03168382815181106104c4576104c4611fd3565b6020026020010151608001516001600160401b0316111561051b578281815181106104f1576104f1611fd3565b60200260200101516060015160ff168661050b9190611fe9565b95508461051781612004565b9550505b8061052581612023565b91505061049f565b50505050935093915050565b6001546001600160a01b031633146105935760405162461bcd60e51b81526020600482015260186024820152772737ba1030baba3437b934bd32b210383ab13634b9b432b960411b60448201526064015b60405180910390fd5b806105ce5760405162461bcd60e51b815260206004820152600b60248201526a08adae0e8f240c4c2e8c6d60ab1b604482015260640161058a565b60328111156106115760405162461bcd60e51b815260206004820152600f60248201526e426174636820746f6f206c6172676560881b604482015260640161058a565b60005b8181101561090d57600083838381811061063057610630611fd3565b9050602002810190610642919061203c565b61064b9061213d565b90506064816060015160ff1611156106955760405162461bcd60e51b815260206004820152600d60248201526c496e76616c69642073636f726560981b604482015260640161058a565b6000816020015182604001516040516020016106b29291906121e1565b60405160208183030381529060405280519060200120905060006040518060e001604052808460000151600b8111156106ed576106ed611bf1565b81526020858101516001600160a01b0316818301526040808701518184015260608088015160ff16908401526001600160401b034216608084015260a080880151908401523360c090930192909252600085815260038252918220805460018181018355918452919092208351600590920201805493945084939092839160ff19169083600b81111561078257610782611bf1565b0217905550602082015181546001600160a01b0390911661010002610100600160a81b0319909116178155604082015160018201906107c19082612263565b50606082015160028201805460808501516001600160401b03166101000268ffffffffffffffffff1990911660ff9093169290921791909117905560a0820151600382015560c090910151600490910180546001600160a01b039092166001600160a01b03199092169190911790556005805490600061084083612023565b9190505550600060055484602001518560400151426040516020016108689493929190612322565b60408051601f1981840301815282825280516020918201206000878152600483528381208054600181018255908252908390200181905590870151918701518751606089015192955085946001600160a01b03909416937fb08e683c13433fe90ca6594da3b1d01d68cd51af08f133be4c987b52030edd0f936108ee9392914290612363565b60405180910390a350505050808061090590612023565b915050610614565b50604080518281526001600160401b03421660208201527fdb75a30a7053677e94899effac7c884aae8eadc4f1aacc965671b9d6d10bec9b910160405180910390a15050565b6060600084848460405160200161096c93929190611f35565b60408051601f19818403018152828252805160209182012060008181526003835283812080548085028701850190955284865291955090929184015b82821015610af6576000848152602090206040805160e08101909152600584029091018054829060ff16600b8111156109e3576109e3611bf1565b600b8111156109f4576109f4611bf1565b8152815461010090046001600160a01b03166020820152600182018054604090920191610a2090611f5c565b80601f0160208091040260200160405190810160405280929190818152602001828054610a4c90611f5c565b8015610a995780601f10610a6e57610100808354040283529160200191610a99565b820191906000526020600020905b815481529060010190602001808311610a7c57829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b031660809091015290825260019290920191016109a8565b505050509150509392505050565b610b0c6119fc565b610b166000611a29565b565b610b206119fc565b6001600160a01b038116610b665760405162461bcd60e51b815260206004820152600d60248201526c125b9d985b1a59081d985d5b1d609a1b604482015260640161058a565b600280546001600160a01b0319166001600160a01b0392909216919091179055565b6001546000906001600160a01b03163314610be05760405162461bcd60e51b81526020600482015260186024820152772737ba1030baba3437b934bd32b210383ab13634b9b432b960411b604482015260640161058a565b60648360ff161115610c245760405162461bcd60e51b815260206004820152600d60248201526c496e76616c69642073636f726560981b604482015260640161058a565b6000868686604051602001610c3b93929190611f35565b60405160208183030381529060405280519060200120905060006040518060e001604052808a600b811115610c7257610c72611bf1565b8152602001896001600160a01b0316815260200188888080601f016020809104026020016040519081016040528093929190818152602001838380828437600092018290525093855250505060ff88166020808401919091526001600160401b03421660408085019190915260608401899052336080909401939093528582526003815291812080546001818101835591835292909120835160059093020180549394508493909291839160ff19169083600b811115610d3457610d34611bf1565b0217905550602082015181546001600160a01b0390911661010002610100600160a81b031990911617815560408201516001820190610d739082612263565b50606082015160028201805460808501516001600160401b03166101000268ffffffffffffffffff1990911660ff9093169290921791909117905560a0820151600382015560c090910151600490910180546001600160a01b039092166001600160a01b031990921691909117905560058054906000610df283612023565b919050555060055488888842604051602001610e129594939291906123a6565b60408051601f19818403018152828252805160209182012060008681526004835292832080546001810182559084529190922001819055935083906001600160a01b038a16907fb08e683c13433fe90ca6594da3b1d01d68cd51af08f133be4c987b52030edd0f90610e8d908b908b908f908c9042906123d5565b60405180910390a350509695505050505050565b60606000848484604051602001610eba93929190611f35565b60408051601f19818403018152828252805160209182012060008181526004835283812080548085028701850190955284865291955093929091830182828015610f2357602002820191906000526020600020905b815481526020019060010190808311610f0f575b50505050509050600060036000848152602001908152602001600020805480602002602001604051908101604052809291908181526020016000905b828210156110ad576000848152602090206040805160e08101909152600584029091018054829060ff16600b811115610f9a57610f9a611bf1565b600b811115610fab57610fab611bf1565b8152815461010090046001600160a01b03166020820152600182018054604090920191610fd790611f5c565b80601f016020809104026020016040519081016040528092919081815260200182805461100390611f5c565b80156110505780601f1061102557610100808354040283529160200191611050565b820191906000526020600020905b81548152906001019060200180831161103357829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b03166080909101529082526001929092019101610f5f565b505050509050600062015180426110c49190611fac565b90506000805b835181101561112a57826001600160401b03168482815181106110ef576110ef611fd3565b6020026020010151608001516001600160401b03161115611118578161111481612023565b9250505b8061112281612023565b9150506110ca565b506000816001600160401b038111156111455761114561205c565b60405190808252806020026020018201604052801561116e578160200160208202803683370190505b5090506000805b855181101561121757846001600160401b031686828151811061119a5761119a611fd3565b6020026020010151608001516001600160401b03161180156111bb57508382105b15611205578681815181106111d2576111d2611fd3565b60200260200101518383815181106111ec576111ec611fd3565b60209081029190910101528161120181612023565b9250505b8061120f81612023565b915050611175565b50909a9950505050505050505050565b6060600085858560405160200161124093929190611f35565b60408051601f19818403018152828252805160209182012060008181526003835283812080548085028701850190955284865291955093929091849084015b828210156113cd576000848152602090206040805160e08101909152600584029091018054829060ff16600b8111156112ba576112ba611bf1565b600b8111156112cb576112cb611bf1565b8152815461010090046001600160a01b031660208201526001820180546040909201916112f790611f5c565b80601f016020809104026020016040519081016040528092919081815260200182805461132390611f5c565b80156113705780601f1061134557610100808354040283529160200191611370565b820191906000526020600020905b81548152906001019060200180831161135357829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b0316608090910152908252600192909201910161127f565b5050505090506000805b82518110156114465785600b8111156113f2576113f2611bf1565b83828151811061140457611404611fd3565b602002602001015160000151600b81111561142157611421611bf1565b03611434578161143081612023565b9250505b8061143e81612023565b9150506113d7565b506000816001600160401b038111156114615761146161205c565b6040519080825280602002602001820160405280156114d357816020015b6114c06040805160e08101909152806000815260006020820181905260606040830181905282018190526080820181905260a0820181905260c09091015290565b81526020019060019003908161147f5790505b5090506000805b84518110156115815787600b8111156114f5576114f5611bf1565b85828151811061150757611507611fd3565b602002602001015160000151600b81111561152457611524611bf1565b0361156f5784818151811061153b5761153b611fd3565b602002602001015183838151811061155557611555611fd3565b6020026020010181905250818061156b90612023565b9250505b8061157981612023565b9150506114da565b50909998505050505050505050565b6115986119fc565b6001600160a01b0381166115e25760405162461bcd60e51b815260206004820152601160248201527024b73b30b634b210383ab13634b9b432b960791b604482015260640161058a565b600180546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f6e5bc53d1e6616a3ec5c76e804ec3ae0ab7c1c28dd71cd1070ff70302ad03c5f90600090a35050565b6004602052816000526040600020818154811061165057600080fd5b90600052602060002001600091509150505481565b6003602052816000526040600020818154811061168157600080fd5b60009182526020909120600590910201805460018201805460ff831695506101009092046001600160a01b03169350906116ba90611f5c565b80601f01602080910402602001604051908101604052809291908181526020018280546116e690611f5c565b80156117335780601f1061170857610100808354040283529160200191611733565b820191906000526020600020905b81548152906001019060200180831161171657829003601f168201915b5050505060028301546003840154600490940154929360ff8216936101009092046001600160401b03169250906001600160a01b031687565b600083838360405160200161178393929190611f35565b60408051601f19818403018152918152815160209283012060008181526003909352908220909250906117b962093a8042611fac565b905060005b82548110156119b557816001600160401b03168382815481106117e3576117e3611fd3565b600091825260209091206005909102016002015461010090046001600160401b031610156119a3578254839061181b9060019061242f565b8154811061182b5761182b611fd3565b906000526020600020906005020183828154811061184b5761184b611fd3565b6000918252602090912082546005909202018054909160ff1690829060ff1916600183600b81111561187f5761187f611bf1565b021790555081548154610100600160a81b031916610100918290046001600160a01b03169091021781556001808201906118bb90840182612448565b5060028281018054918301805460ff19811660ff909416938417825591546001600160401b0361010091829004160268ffffffffffffffffff1990921690921717905560038083015490820155600491820154910180546001600160a01b0319166001600160a01b03909216919091179055825483908061193e5761193e612522565b60008281526020812060056000199093019283020180546001600160a81b03191681559061196f6001830182611a79565b5060028101805468ffffffffffffffffff191690556000600382015560040180546001600160a01b031916905590556117be565b806119ad81612023565b9150506117be565b50505050505050565b6119c66119fc565b6001600160a01b0381166119f057604051631e4fbdf760e01b81526000600482015260240161058a565b6119f981611a29565b50565b6000546001600160a01b03163314610b165760405163118cdaa760e01b815233600482015260240161058a565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b508054611a8590611f5c565b6000825580601f10611a95575050565b601f0160209004906000526020600020908101906119f991905b80821115611ac35760008155600101611aaf565b5090565b80356001600160a01b0381168114611ade57600080fd5b919050565b60008083601f840112611af557600080fd5b5081356001600160401b03811115611b0c57600080fd5b602083019150836020828501011115611b2457600080fd5b9250929050565b600080600060408486031215611b4057600080fd5b611b4984611ac7565b925060208401356001600160401b03811115611b6457600080fd5b611b7086828701611ae3565b9497909650939450505050565b60008060208385031215611b9057600080fd5b82356001600160401b0380821115611ba757600080fd5b818501915085601f830112611bbb57600080fd5b813581811115611bca57600080fd5b8660208260051b8501011115611bdf57600080fd5b60209290920196919550909350505050565b634e487b7160e01b600052602160045260246000fd5b600c8110611c2557634e487b7160e01b600052602160045260246000fd5b9052565b60005b83811015611c44578181015183820152602001611c2c565b50506000910152565b60008151808452611c65816020860160208601611c29565b601f01601f19169290920160200192915050565b60006020808301818452808551808352604092508286019150828160051b87010184880160005b83811015611d3a57603f19898403018552815160e0611cc0858351611c07565b818901516001600160a01b0316858a015287820151888601829052611ce782870182611c4d565b60608481015160ff16908801526080808501516001600160401b03169088015260a0808501519088015260c0938401516001600160a01b0316939096019290925250509386019390860190600101611ca0565b509098975050505050505050565b600060208284031215611d5a57600080fd5b611d6382611ac7565b9392505050565b8035600c8110611ade57600080fd5b803560ff81168114611ade57600080fd5b60008060008060008060a08789031215611da357600080fd5b611dac87611d6a565b9550611dba60208801611ac7565b945060408701356001600160401b03811115611dd557600080fd5b611de189828a01611ae3565b9095509350611df4905060608801611d79565b9150608087013590509295509295509295565b6020808252825182820181905260009190848201906040850190845b81811015611e3f57835183529284019291840191600101611e23565b50909695505050505050565b60008060008060608587031215611e6157600080fd5b611e6a85611ac7565b935060208501356001600160401b03811115611e8557600080fd5b611e9187828801611ae3565b9094509250611ea4905060408601611d6a565b905092959194509250565b60008060408385031215611ec257600080fd5b50508035926020909101359150565b611edb8189611c07565b600060018060a01b03808916602084015260e06040840152611f0060e0840189611c4d565b915060ff871660608401526001600160401b03861660808401528460a084015280841660c08401525098975050505050505050565b6001600160601b03198460601b168152818360148301376000910160140190815292915050565b600181811c90821680611f7057607f821691505b602082108103611f9057634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052601160045260246000fd5b6001600160401b03828116828216039080821115611fcc57611fcc611f96565b5092915050565b634e487b7160e01b600052603260045260246000fd5b61ffff818116838216019080821115611fcc57611fcc611f96565b600060ff821660ff810361201a5761201a611f96565b60010192915050565b60006001820161203557612035611f96565b5060010190565b6000823560de1983360301811261205257600080fd5b9190910192915050565b634e487b7160e01b600052604160045260246000fd5b60405160e081016001600160401b03811182821017156120945761209461205c565b60405290565b600082601f8301126120ab57600080fd5b81356001600160401b03808211156120c5576120c561205c565b604051601f8301601f19908116603f011681019082821181831017156120ed576120ed61205c565b8160405283815286602085880101111561210657600080fd5b836020870160208301376000602085830101528094505050505092915050565b80356001600160401b0381168114611ade57600080fd5b600060e0823603121561214f57600080fd5b612157612072565b61216083611d6a565b815261216e60208401611ac7565b602082015260408301356001600160401b0381111561218c57600080fd5b6121983682860161209a565b6040830152506121aa60608401611d79565b60608201526121bb60808401612126565b608082015260a083013560a08201526121d660c08401611ac7565b60c082015292915050565b6001600160601b03198360601b16815260008251612206816014850160208701611c29565b919091016014019392505050565b601f82111561225e57600081815260208120601f850160051c8101602086101561223b5750805b601f850160051c820191505b8181101561225a57828155600101612247565b5050505b505050565b81516001600160401b0381111561227c5761227c61205c565b6122908161228a8454611f5c565b84612214565b602080601f8311600181146122c557600084156122ad5750858301515b600019600386901b1c1916600185901b17855561225a565b600085815260208120601f198616915b828110156122f4578886015182559484019460019091019084016122d5565b50858210156123125787850151600019600388901b60f8161c191681555b5050505050600190811b01905550565b8481526001600160601b03198460601b1660208201526000835161234d816034850160208801611c29565b6034920191820192909252605401949350505050565b6080815260006123766080830187611c4d565b90506123856020830186611c07565b60ff841660408301526001600160401b038316606083015295945050505050565b8581526001600160601b03198560601b1660208201528284603483013760349201918201526054019392505050565b60808152846080820152848660a0830137600060a08683010152600060a0601f19601f880116830101905061240d6020830186611c07565b60ff841660408301526001600160401b03831660608301529695505050505050565b8181038181111561244257612442611f96565b92915050565b818103612453575050565b61245d8254611f5c565b6001600160401b038111156124745761247461205c565b6124828161228a8454611f5c565b6000601f8211600181146124b6576000831561249e5750848201545b600019600385901b1c1916600184901b17845561251b565b600085815260209020601f19841690600086815260209020845b838110156124f057828601548255600195860195909101906020016124d0565b508583101561250e5781850154600019600388901b60f8161c191681555b50505060018360011b0184555b5050505050565b634e487b7160e01b600052603160045260246000fdfea2646970667358221220cb48a3bcaf15d016445c58c71afe98731982629a9f052964a799b39caa21453964736f6c63430008140033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101215760003560e01c80638da5cb5b116100ad578063d4b75f3b11610071578063d4b75f3b14610273578063daed59f214610286578063e23961e0146102ac578063f2fde38b146102bf578063fa57f203146102d257600080fd5b80638da5cb5b146102095780639e6fcbd81461021a578063a840a0fd1461022d578063b7417d691461024d578063cab636611461026057600080fd5b80634bfe0f76116100f45780634bfe0f76146101a657806355629da2146101b9578063674c48d6146101ce578063715018a6146101ee5780637d2f1c47146101f657600080fd5b806312f84863146101265780631d580b771461015a57806336516a8a1461017157806349c81c871461019c575b600080fd5b610139610134366004611b2b565b6102dc565b6040805161ffff909316835260ff9091166020830152015b60405180910390f35b61016360055481565b604051908152602001610151565b600154610184906001600160a01b031681565b6040516001600160a01b039091168152602001610151565b61016362093a8081565b600254610184906001600160a01b031681565b6101cc6101c7366004611b7d565b610539565b005b6101e16101dc366004611b2b565b610953565b6040516101519190611c79565b6101cc610b04565b6101cc610204366004611d48565b610b18565b6000546001600160a01b0316610184565b610163610228366004611d8a565b610b88565b61024061023b366004611b2b565b610ea1565b6040516101519190611e07565b6101e161025b366004611e4b565b611227565b6101cc61026e366004611d48565b611590565b610163610281366004611eaf565b611634565b610299610294366004611eaf565b611665565b6040516101519796959493929190611ed1565b6101cc6102ba366004611b2b565b61176c565b6101cc6102cd366004611d48565b6119be565b6101636201518081565b60008060008585856040516020016102f693929190611f35565b60408051601f19818403018152828252805160209182012060008181526003835283812080548085028701850190955284865291955093929091849084015b82821015610483576000848152602090206040805160e08101909152600584029091018054829060ff16600b81111561037057610370611bf1565b600b81111561038157610381611bf1565b8152815461010090046001600160a01b031660208201526001820180546040909201916103ad90611f5c565b80601f01602080910402602001604051908101604052809291908181526020018280546103d990611f5c565b80156104265780601f106103fb57610100808354040283529160200191610426565b820191906000526020600020905b81548152906001019060200180831161040957829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b03166080909101529082526001929092019101610335565b5050505090506000620151804261049a9190611fac565b905060005b825181101561052d57816001600160401b03168382815181106104c4576104c4611fd3565b6020026020010151608001516001600160401b0316111561051b578281815181106104f1576104f1611fd3565b60200260200101516060015160ff168661050b9190611fe9565b95508461051781612004565b9550505b8061052581612023565b91505061049f565b50505050935093915050565b6001546001600160a01b031633146105935760405162461bcd60e51b81526020600482015260186024820152772737ba1030baba3437b934bd32b210383ab13634b9b432b960411b60448201526064015b60405180910390fd5b806105ce5760405162461bcd60e51b815260206004820152600b60248201526a08adae0e8f240c4c2e8c6d60ab1b604482015260640161058a565b60328111156106115760405162461bcd60e51b815260206004820152600f60248201526e426174636820746f6f206c6172676560881b604482015260640161058a565b60005b8181101561090d57600083838381811061063057610630611fd3565b9050602002810190610642919061203c565b61064b9061213d565b90506064816060015160ff1611156106955760405162461bcd60e51b815260206004820152600d60248201526c496e76616c69642073636f726560981b604482015260640161058a565b6000816020015182604001516040516020016106b29291906121e1565b60405160208183030381529060405280519060200120905060006040518060e001604052808460000151600b8111156106ed576106ed611bf1565b81526020858101516001600160a01b0316818301526040808701518184015260608088015160ff16908401526001600160401b034216608084015260a080880151908401523360c090930192909252600085815260038252918220805460018181018355918452919092208351600590920201805493945084939092839160ff19169083600b81111561078257610782611bf1565b0217905550602082015181546001600160a01b0390911661010002610100600160a81b0319909116178155604082015160018201906107c19082612263565b50606082015160028201805460808501516001600160401b03166101000268ffffffffffffffffff1990911660ff9093169290921791909117905560a0820151600382015560c090910151600490910180546001600160a01b039092166001600160a01b03199092169190911790556005805490600061084083612023565b9190505550600060055484602001518560400151426040516020016108689493929190612322565b60408051601f1981840301815282825280516020918201206000878152600483528381208054600181018255908252908390200181905590870151918701518751606089015192955085946001600160a01b03909416937fb08e683c13433fe90ca6594da3b1d01d68cd51af08f133be4c987b52030edd0f936108ee9392914290612363565b60405180910390a350505050808061090590612023565b915050610614565b50604080518281526001600160401b03421660208201527fdb75a30a7053677e94899effac7c884aae8eadc4f1aacc965671b9d6d10bec9b910160405180910390a15050565b6060600084848460405160200161096c93929190611f35565b60408051601f19818403018152828252805160209182012060008181526003835283812080548085028701850190955284865291955090929184015b82821015610af6576000848152602090206040805160e08101909152600584029091018054829060ff16600b8111156109e3576109e3611bf1565b600b8111156109f4576109f4611bf1565b8152815461010090046001600160a01b03166020820152600182018054604090920191610a2090611f5c565b80601f0160208091040260200160405190810160405280929190818152602001828054610a4c90611f5c565b8015610a995780601f10610a6e57610100808354040283529160200191610a99565b820191906000526020600020905b815481529060010190602001808311610a7c57829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b031660809091015290825260019290920191016109a8565b505050509150509392505050565b610b0c6119fc565b610b166000611a29565b565b610b206119fc565b6001600160a01b038116610b665760405162461bcd60e51b815260206004820152600d60248201526c125b9d985b1a59081d985d5b1d609a1b604482015260640161058a565b600280546001600160a01b0319166001600160a01b0392909216919091179055565b6001546000906001600160a01b03163314610be05760405162461bcd60e51b81526020600482015260186024820152772737ba1030baba3437b934bd32b210383ab13634b9b432b960411b604482015260640161058a565b60648360ff161115610c245760405162461bcd60e51b815260206004820152600d60248201526c496e76616c69642073636f726560981b604482015260640161058a565b6000868686604051602001610c3b93929190611f35565b60405160208183030381529060405280519060200120905060006040518060e001604052808a600b811115610c7257610c72611bf1565b8152602001896001600160a01b0316815260200188888080601f016020809104026020016040519081016040528093929190818152602001838380828437600092018290525093855250505060ff88166020808401919091526001600160401b03421660408085019190915260608401899052336080909401939093528582526003815291812080546001818101835591835292909120835160059093020180549394508493909291839160ff19169083600b811115610d3457610d34611bf1565b0217905550602082015181546001600160a01b0390911661010002610100600160a81b031990911617815560408201516001820190610d739082612263565b50606082015160028201805460808501516001600160401b03166101000268ffffffffffffffffff1990911660ff9093169290921791909117905560a0820151600382015560c090910151600490910180546001600160a01b039092166001600160a01b031990921691909117905560058054906000610df283612023565b919050555060055488888842604051602001610e129594939291906123a6565b60408051601f19818403018152828252805160209182012060008681526004835292832080546001810182559084529190922001819055935083906001600160a01b038a16907fb08e683c13433fe90ca6594da3b1d01d68cd51af08f133be4c987b52030edd0f90610e8d908b908b908f908c9042906123d5565b60405180910390a350509695505050505050565b60606000848484604051602001610eba93929190611f35565b60408051601f19818403018152828252805160209182012060008181526004835283812080548085028701850190955284865291955093929091830182828015610f2357602002820191906000526020600020905b815481526020019060010190808311610f0f575b50505050509050600060036000848152602001908152602001600020805480602002602001604051908101604052809291908181526020016000905b828210156110ad576000848152602090206040805160e08101909152600584029091018054829060ff16600b811115610f9a57610f9a611bf1565b600b811115610fab57610fab611bf1565b8152815461010090046001600160a01b03166020820152600182018054604090920191610fd790611f5c565b80601f016020809104026020016040519081016040528092919081815260200182805461100390611f5c565b80156110505780601f1061102557610100808354040283529160200191611050565b820191906000526020600020905b81548152906001019060200180831161103357829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b03166080909101529082526001929092019101610f5f565b505050509050600062015180426110c49190611fac565b90506000805b835181101561112a57826001600160401b03168482815181106110ef576110ef611fd3565b6020026020010151608001516001600160401b03161115611118578161111481612023565b9250505b8061112281612023565b9150506110ca565b506000816001600160401b038111156111455761114561205c565b60405190808252806020026020018201604052801561116e578160200160208202803683370190505b5090506000805b855181101561121757846001600160401b031686828151811061119a5761119a611fd3565b6020026020010151608001516001600160401b03161180156111bb57508382105b15611205578681815181106111d2576111d2611fd3565b60200260200101518383815181106111ec576111ec611fd3565b60209081029190910101528161120181612023565b9250505b8061120f81612023565b915050611175565b50909a9950505050505050505050565b6060600085858560405160200161124093929190611f35565b60408051601f19818403018152828252805160209182012060008181526003835283812080548085028701850190955284865291955093929091849084015b828210156113cd576000848152602090206040805160e08101909152600584029091018054829060ff16600b8111156112ba576112ba611bf1565b600b8111156112cb576112cb611bf1565b8152815461010090046001600160a01b031660208201526001820180546040909201916112f790611f5c565b80601f016020809104026020016040519081016040528092919081815260200182805461132390611f5c565b80156113705780601f1061134557610100808354040283529160200191611370565b820191906000526020600020905b81548152906001019060200180831161135357829003601f168201915b5050509183525050600282015460ff81166020808401919091526101009091046001600160401b03166040830152600383015460608301526004909201546001600160a01b0316608090910152908252600192909201910161127f565b5050505090506000805b82518110156114465785600b8111156113f2576113f2611bf1565b83828151811061140457611404611fd3565b602002602001015160000151600b81111561142157611421611bf1565b03611434578161143081612023565b9250505b8061143e81612023565b9150506113d7565b506000816001600160401b038111156114615761146161205c565b6040519080825280602002602001820160405280156114d357816020015b6114c06040805160e08101909152806000815260006020820181905260606040830181905282018190526080820181905260a0820181905260c09091015290565b81526020019060019003908161147f5790505b5090506000805b84518110156115815787600b8111156114f5576114f5611bf1565b85828151811061150757611507611fd3565b602002602001015160000151600b81111561152457611524611bf1565b0361156f5784818151811061153b5761153b611fd3565b602002602001015183838151811061155557611555611fd3565b6020026020010181905250818061156b90612023565b9250505b8061157981612023565b9150506114da565b50909998505050505050505050565b6115986119fc565b6001600160a01b0381166115e25760405162461bcd60e51b815260206004820152601160248201527024b73b30b634b210383ab13634b9b432b960791b604482015260640161058a565b600180546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f6e5bc53d1e6616a3ec5c76e804ec3ae0ab7c1c28dd71cd1070ff70302ad03c5f90600090a35050565b6004602052816000526040600020818154811061165057600080fd5b90600052602060002001600091509150505481565b6003602052816000526040600020818154811061168157600080fd5b60009182526020909120600590910201805460018201805460ff831695506101009092046001600160a01b03169350906116ba90611f5c565b80601f01602080910402602001604051908101604052809291908181526020018280546116e690611f5c565b80156117335780601f1061170857610100808354040283529160200191611733565b820191906000526020600020905b81548152906001019060200180831161171657829003601f168201915b5050505060028301546003840154600490940154929360ff8216936101009092046001600160401b03169250906001600160a01b031687565b600083838360405160200161178393929190611f35565b60408051601f19818403018152918152815160209283012060008181526003909352908220909250906117b962093a8042611fac565b905060005b82548110156119b557816001600160401b03168382815481106117e3576117e3611fd3565b600091825260209091206005909102016002015461010090046001600160401b031610156119a3578254839061181b9060019061242f565b8154811061182b5761182b611fd3565b906000526020600020906005020183828154811061184b5761184b611fd3565b6000918252602090912082546005909202018054909160ff1690829060ff1916600183600b81111561187f5761187f611bf1565b021790555081548154610100600160a81b031916610100918290046001600160a01b03169091021781556001808201906118bb90840182612448565b5060028281018054918301805460ff19811660ff909416938417825591546001600160401b0361010091829004160268ffffffffffffffffff1990921690921717905560038083015490820155600491820154910180546001600160a01b0319166001600160a01b03909216919091179055825483908061193e5761193e612522565b60008281526020812060056000199093019283020180546001600160a81b03191681559061196f6001830182611a79565b5060028101805468ffffffffffffffffff191690556000600382015560040180546001600160a01b031916905590556117be565b806119ad81612023565b9150506117be565b50505050505050565b6119c66119fc565b6001600160a01b0381166119f057604051631e4fbdf760e01b81526000600482015260240161058a565b6119f981611a29565b50565b6000546001600160a01b03163314610b165760405163118cdaa760e01b815233600482015260240161058a565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b508054611a8590611f5c565b6000825580601f10611a95575050565b601f0160209004906000526020600020908101906119f991905b80821115611ac35760008155600101611aaf565b5090565b80356001600160a01b0381168114611ade57600080fd5b919050565b60008083601f840112611af557600080fd5b5081356001600160401b03811115611b0c57600080fd5b602083019150836020828501011115611b2457600080fd5b9250929050565b600080600060408486031215611b4057600080fd5b611b4984611ac7565b925060208401356001600160401b03811115611b6457600080fd5b611b7086828701611ae3565b9497909650939450505050565b60008060208385031215611b9057600080fd5b82356001600160401b0380821115611ba757600080fd5b818501915085601f830112611bbb57600080fd5b813581811115611bca57600080fd5b8660208260051b8501011115611bdf57600080fd5b60209290920196919550909350505050565b634e487b7160e01b600052602160045260246000fd5b600c8110611c2557634e487b7160e01b600052602160045260246000fd5b9052565b60005b83811015611c44578181015183820152602001611c2c565b50506000910152565b60008151808452611c65816020860160208601611c29565b601f01601f19169290920160200192915050565b60006020808301818452808551808352604092508286019150828160051b87010184880160005b83811015611d3a57603f19898403018552815160e0611cc0858351611c07565b818901516001600160a01b0316858a015287820151888601829052611ce782870182611c4d565b60608481015160ff16908801526080808501516001600160401b03169088015260a0808501519088015260c0938401516001600160a01b0316939096019290925250509386019390860190600101611ca0565b509098975050505050505050565b600060208284031215611d5a57600080fd5b611d6382611ac7565b9392505050565b8035600c8110611ade57600080fd5b803560ff81168114611ade57600080fd5b60008060008060008060a08789031215611da357600080fd5b611dac87611d6a565b9550611dba60208801611ac7565b945060408701356001600160401b03811115611dd557600080fd5b611de189828a01611ae3565b9095509350611df4905060608801611d79565b9150608087013590509295509295509295565b6020808252825182820181905260009190848201906040850190845b81811015611e3f57835183529284019291840191600101611e23565b50909695505050505050565b60008060008060608587031215611e6157600080fd5b611e6a85611ac7565b935060208501356001600160401b03811115611e8557600080fd5b611e9187828801611ae3565b9094509250611ea4905060408601611d6a565b905092959194509250565b60008060408385031215611ec257600080fd5b50508035926020909101359150565b611edb8189611c07565b600060018060a01b03808916602084015260e06040840152611f0060e0840189611c4d565b915060ff871660608401526001600160401b03861660808401528460a084015280841660c08401525098975050505050505050565b6001600160601b03198460601b168152818360148301376000910160140190815292915050565b600181811c90821680611f7057607f821691505b602082108103611f9057634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052601160045260246000fd5b6001600160401b03828116828216039080821115611fcc57611fcc611f96565b5092915050565b634e487b7160e01b600052603260045260246000fd5b61ffff818116838216019080821115611fcc57611fcc611f96565b600060ff821660ff810361201a5761201a611f96565b60010192915050565b60006001820161203557612035611f96565b5060010190565b6000823560de1983360301811261205257600080fd5b9190910192915050565b634e487b7160e01b600052604160045260246000fd5b60405160e081016001600160401b03811182821017156120945761209461205c565b60405290565b600082601f8301126120ab57600080fd5b81356001600160401b03808211156120c5576120c561205c565b604051601f8301601f19908116603f011681019082821181831017156120ed576120ed61205c565b8160405283815286602085880101111561210657600080fd5b836020870160208301376000602085830101528094505050505092915050565b80356001600160401b0381168114611ade57600080fd5b600060e0823603121561214f57600080fd5b612157612072565b61216083611d6a565b815261216e60208401611ac7565b602082015260408301356001600160401b0381111561218c57600080fd5b6121983682860161209a565b6040830152506121aa60608401611d79565b60608201526121bb60808401612126565b608082015260a083013560a08201526121d660c08401611ac7565b60c082015292915050565b6001600160601b03198360601b16815260008251612206816014850160208701611c29565b919091016014019392505050565b601f82111561225e57600081815260208120601f850160051c8101602086101561223b5750805b601f850160051c820191505b8181101561225a57828155600101612247565b5050505b505050565b81516001600160401b0381111561227c5761227c61205c565b6122908161228a8454611f5c565b84612214565b602080601f8311600181146122c557600084156122ad5750858301515b600019600386901b1c1916600185901b17855561225a565b600085815260208120601f198616915b828110156122f4578886015182559484019460019091019084016122d5565b50858210156123125787850151600019600388901b60f8161c191681555b5050505050600190811b01905550565b8481526001600160601b03198460601b1660208201526000835161234d816034850160208801611c29565b6034920191820192909252605401949350505050565b6080815260006123766080830187611c4d565b90506123856020830186611c07565b60ff841660408301526001600160401b038316606083015295945050505050565b8581526001600160601b03198560601b1660208201528284603483013760349201918201526054019392505050565b60808152846080820152848660a0830137600060a08683010152600060a0601f19601f880116830101905061240d6020830186611c07565b60ff841660408301526001600160401b03831660608301529695505050505050565b8181038181111561244257612442611f96565b92915050565b818103612453575050565b61245d8254611f5c565b6001600160401b038111156124745761247461205c565b6124828161228a8454611f5c565b6000601f8211600181146124b6576000831561249e5750848201545b600019600385901b1c1916600184901b17845561251b565b600085815260209020601f19841690600086815260209020845b838110156124f057828601548255600195860195909101906020016124d0565b508583101561250e5781850154600019600388901b60f8161c191681555b50505060018360011b0184555b5050505050565b634e487b7160e01b600052603160045260246000fdfea2646970667358221220cb48a3bcaf15d016445c58c71afe98731982629a9f052964a799b39caa21453964736f6c63430008140033",
+  "devdoc": {
+    "details": "Provides verifiable, auditable record of all signals that trigger shorts",
+    "errors": {
+      "OwnableInvalidOwner(address)": [
+        {
+          "details": "The owner is not a valid owner account. (eg. `address(0)`)"
+        }
+      ],
+      "OwnableUnauthorizedAccount(address)": [
+        {
+          "details": "The caller account is not authorized to perform an operation."
+        }
+      ]
+    },
+    "kind": "dev",
+    "methods": {
+      "getConfidenceScore(address,string)": {
+        "params": {
+          "chain": "Chain where token exists",
+          "tokenAddress": "Token to check"
+        },
+        "returns": {
+          "signalCount": "Number of recent signals",
+          "totalScore": "Sum of all recent signal scores"
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "publishSignal(uint8,address,string,uint8,bytes32)": {
+        "params": {
+          "chain": "Chain where token exists",
+          "metadataHash": "IPFS hash of full signal data",
+          "score": "Signal strength (0-100)",
+          "signalType": "Type of signal",
+          "tokenAddress": "Token being signaled"
+        }
+      },
+      "publishSignalBatch((uint8,address,string,uint8,uint64,bytes32,address)[])": {
+        "params": {
+          "signals": "Array of signals to publish"
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    },
+    "title": "SignalOracle",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "cleanExpiredSignals(address,string)": {
+        "notice": "Clean up expired signals to save gas on reads"
+      },
+      "getConfidenceScore(address,string)": {
+        "notice": "Get aggregated confidence score for a token"
+      },
+      "getRecentSignalIds(address,string)": {
+        "notice": "Get recent signal IDs for position recording"
+      },
+      "getSignalHistory(address,string)": {
+        "notice": "Get all signals for a token"
+      },
+      "getSignalsByType(address,string,uint8)": {
+        "notice": "Get signals by type"
+      },
+      "publishSignal(uint8,address,string,uint8,bytes32)": {
+        "notice": "Publish a single signal"
+      },
+      "publishSignalBatch((uint8,address,string,uint8,uint64,bytes32,address)[])": {
+        "notice": "Publish multiple signals in one transaction (gas efficient)"
+      }
+    },
+    "notice": "Publishes and aggregates AI agent signals on-chain",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 8,
+        "contract": "contracts/SignalOracle.sol:SignalOracle",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 3160,
+        "contract": "contracts/SignalOracle.sol:SignalOracle",
+        "label": "publisherAddress",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_address"
+      },
+      {
+        "astId": 3162,
+        "contract": "contracts/SignalOracle.sol:SignalOracle",
+        "label": "nexusVault",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_address"
+      },
+      {
+        "astId": 3168,
+        "contract": "contracts/SignalOracle.sol:SignalOracle",
+        "label": "signalHistory",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_bytes32,t_array(t_struct(Signal)3158_storage)dyn_storage)"
+      },
+      {
+        "astId": 3173,
+        "contract": "contracts/SignalOracle.sol:SignalOracle",
+        "label": "signalIds",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_bytes32,t_array(t_bytes32)dyn_storage)"
+      },
+      {
+        "astId": 3175,
+        "contract": "contracts/SignalOracle.sol:SignalOracle",
+        "label": "globalSignalCounter",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)dyn_storage": {
+        "base": "t_bytes32",
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32"
+      },
+      "t_array(t_struct(Signal)3158_storage)dyn_storage": {
+        "base": "t_struct(Signal)3158_storage",
+        "encoding": "dynamic_array",
+        "label": "struct SignalOracle.Signal[]",
+        "numberOfBytes": "32"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_enum(SignalType)3142": {
+        "encoding": "inplace",
+        "label": "enum SignalOracle.SignalType",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_bytes32,t_array(t_bytes32)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bytes32[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_bytes32)dyn_storage"
+      },
+      "t_mapping(t_bytes32,t_array(t_struct(Signal)3158_storage)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct SignalOracle.Signal[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_struct(Signal)3158_storage)dyn_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Signal)3158_storage": {
+        "encoding": "inplace",
+        "label": "struct SignalOracle.Signal",
+        "members": [
+          {
+            "astId": 3145,
+            "contract": "contracts/SignalOracle.sol:SignalOracle",
+            "label": "signalType",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_enum(SignalType)3142"
+          },
+          {
+            "astId": 3147,
+            "contract": "contracts/SignalOracle.sol:SignalOracle",
+            "label": "tokenAddress",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 3149,
+            "contract": "contracts/SignalOracle.sol:SignalOracle",
+            "label": "chain",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 3151,
+            "contract": "contracts/SignalOracle.sol:SignalOracle",
+            "label": "score",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 3153,
+            "contract": "contracts/SignalOracle.sol:SignalOracle",
+            "label": "timestamp",
+            "offset": 1,
+            "slot": "2",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 3155,
+            "contract": "contracts/SignalOracle.sol:SignalOracle",
+            "label": "metadataHash",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 3157,
+            "contract": "contracts/SignalOracle.sol:SignalOracle",
+            "label": "publisher",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address"
+          }
+        ],
+        "numberOfBytes": "160"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      },
+      "t_uint8": {
+        "encoding": "inplace",
+        "label": "uint8",
+        "numberOfBytes": "1"
+      }
+    }
+  }
+}
