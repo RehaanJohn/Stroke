@@ -14,6 +14,8 @@ from .data_ingestion import DataIngestion, TokenSignal
 from .local_llm_screener import LocalLLMScreener, FlaggedToken
 from .gemini_analyzer import GeminiAnalyzer, TradePlan
 from .social_monitor import SocialMonitor
+from .blockchain_integration import BlockchainIntegration
+from .signal_classifier import SignalClassifier, Strategy, Classification
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -49,6 +51,18 @@ class OrchestrationEngine:
         self.tier1_screener = LocalLLMScreener(mock_mode=tier1_mock)
         self.tier2_analyzer = GeminiAnalyzer(mock_mode=tier2_mock)
         self.social_monitor = SocialMonitor()  # Twitter/X monitor
+        self.signal_classifier = SignalClassifier()  # Strategy router
+        
+        # Initialize blockchain integration
+        import os
+        blockchain_enabled = os.getenv("BLOCKCHAIN_ENABLED", "false").lower() == "true"
+        self.blockchain = BlockchainIntegration(
+            blockchain_service_url=os.getenv("BLOCKCHAIN_SERVICE_URL", "http://localhost:8001"),
+            min_confidence_for_publish=int(os.getenv("BLOCKCHAIN_MIN_CONFIDENCE_PUBLISH", "60")),
+            min_confidence_for_short=int(os.getenv("BLOCKCHAIN_MIN_CONFIDENCE_SHORT", "75")),
+            enabled=blockchain_enabled
+        )
+        logger.info(f"Blockchain integration: {'ENABLED' if blockchain_enabled else 'DISABLED'}")
         
         # Processing queues
         self.signal_queue = deque()  # Incoming raw signals
@@ -214,6 +228,9 @@ class OrchestrationEngine:
             # Store trade plans
             self.trade_plans.extend(trade_plans)
             
+            # Execute trade plans with hybrid strategy routing
+            self._execute_trade_plans(trade_plans)
+            
             logger.info(
                 f"Tier 2 complete: {self.stats['tier2_shorts']} shorts, "
                 f"{self.stats['tier2_monitors']} monitors"
@@ -229,6 +246,133 @@ class OrchestrationEngine:
                 "timestamp": datetime.utcnow().isoformat()
             })
             return []
+    
+    def _execute_trade_plans(self, trade_plans: List[TradePlan]):
+        """
+        Execute trade plans using hybrid strategy routing
+        Routes to GMX shorts, correlated shorts, or dip buys
+        """
+        if not self.blockchain.enabled:
+            logger.info("Blockchain integration disabled, skipping execution")
+            return
+        
+        for plan in trade_plans:
+            if plan.decision != "SHORT":
+                continue
+            
+            try:
+                # Classify signal to determine execution strategy
+                from .signal_classifier import TradePlan as ClassifierTradePlan
+                classifier_plan = ClassifierTradePlan(
+                    token_symbol=plan.token_symbol,
+                    token_address=plan.token_address or '',
+                    chain=plan.chain or 'arbitrum',
+                    confidence=plan.confidence,
+                    position_size_usd=plan.position_size_usd or 10000,
+                    leverage=plan.leverage or 2,
+                    reasoning=plan.reasoning
+                )
+                
+                classification = self.signal_classifier.classify(classifier_plan)
+                
+                # Route to appropriate execution method
+                if classification.strategy == Strategy.GMX_SHORT:
+                    self._execute_gmx_short(plan, classification)
+                    
+                elif classification.strategy == Strategy.CORRELATED_SHORT:
+                    self._execute_correlated_short(plan, classification)
+                    
+                elif classification.strategy == Strategy.DIP_BUY:
+                    self._execute_dip_buy(plan, classification)
+                    
+                else:
+                    logger.info(f"Skipping {plan.token_symbol}: {classification.reason}")
+                    
+            except Exception as e:
+                logger.error(f"Execution error for {plan.token_symbol}: {e}")
+    
+    def _execute_gmx_short(self, plan: TradePlan, classification: Classification):
+        """Execute GMX perpetual short on blue-chip token"""
+        
+        logger.info(f"Executing GMX SHORT for {plan.token_symbol}")
+        
+        try:
+            result = self.blockchain.execute_short(
+                index_token=plan.token_symbol,
+                collateral_usdc=int(plan.position_size_usd * 1_000_000),  # Convert to 6 decimals
+                leverage=min(plan.leverage, 10),  # Cap at 10x leverage
+                confidence=plan.confidence,
+                source_chain='arbitrum'  # Already on Arbitrum for GMX
+            )
+            
+            logger.info(f"✅ GMX SHORT opened: Position ID {result.get('positionId')}")
+            
+        except Exception as e:
+            logger.error(f"GMX SHORT failed for {plan.token_symbol}: {e}")
+    
+    def _execute_correlated_short(self, plan: TradePlan, classification: Classification):
+        """Short correlated blue-chip when memecoin about to rug"""
+        
+        correlated = classification.correlated_asset or 'WETH'
+        logger.info(f"Executing CORRELATED SHORT: {plan.token_symbol} → shorting {correlated}")
+        
+        # Discount position size and confidence for correlation risk
+        adjusted_size = plan.position_size_usd * 0.5  # 50% of original size
+        adjusted_confidence = int(plan.confidence * 0.7)  # 70% of original confidence
+        
+        try:
+            result = self.blockchain.execute_short(
+                index_token=correlated,
+                collateral_usdc=int(adjusted_size * 1_000_000),
+                leverage=2,  # Conservative 2x leverage
+                confidence=adjusted_confidence,
+                source_chain='arbitrum'
+            )
+            
+            logger.info(
+                f"✅ CORRELATED SHORT opened: {correlated} for {plan.token_symbol} "
+                f"(Position ID {result.get('positionId')})"
+            )
+            
+        except Exception as e:
+            logger.error(f"CORRELATED SHORT failed for {plan.token_symbol}: {e}")
+    
+    def _execute_dip_buy(self, plan: TradePlan, classification: Classification):
+        """Buy memecoin dip after rug for dead cat bounce"""
+        
+        logger.info(f"Executing DIP BUY for {plan.token_symbol} (dropped {classification.price_drop_24h}%)")
+        
+        # Validate it's truly post-rug
+        if classification.price_drop_24h and classification.price_drop_24h > -60:
+            logger.warning(f"Not a rug yet ({classification.price_drop_24h}%), skipping dip buy")
+            return
+        
+        # Small position size for high-risk dip buys (max 5% of vault)
+        max_size_usdc = self.blockchain.get_vault_balance() * 0.05 if hasattr(self.blockchain, 'get_vault_balance') else 5000
+        position_size = min(plan.position_size_usd, max_size_usdc)
+        
+        # Calculate targets
+        current_price = classification.current_price or 0
+        take_profit = current_price * 1.4  # +40% bounce target
+        stop_loss = current_price * 0.85   # -15% stop loss
+        
+        try:
+            result = self.blockchain.execute_dip_buy(
+                token=plan.token_address or '',
+                chain=plan.chain or 'base',
+                amount_usdc=int(position_size * 1_000_000),
+                take_profit_price=take_profit,
+                stop_loss_price=stop_loss,
+                confidence=plan.confidence
+            )
+            
+            logger.info(
+                f"✅ DIP BUY executed for {plan.token_symbol}: "
+                f"Entry ${current_price:.8f}, Target ${take_profit:.8f} (+40%)"
+            )
+            
+        except Exception as e:
+            logger.error(f"DIP BUY failed for {plan.token_symbol}: {e}")
     
     def run_cycle(self, signals_per_cycle: int = 500) -> Dict[str, Any]:
         """
