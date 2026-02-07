@@ -31,10 +31,12 @@ NexusVault.sol
 ### ✅ Real Perpetual Shorts (Not Fake!)
 
 **Traditional (Wrong) Approach:**
+
 - Swap USDC → Token (you're now LONG the token)
 - Price drops → You lose money ❌
 
 **NEXUS (Correct) Approach:**
+
 - Open GMX SHORT with USDC collateral
 - Price drops → GMX position profits ✅
 - No need to hold the scam token
@@ -73,10 +75,11 @@ Final: $46,800 USDC on Base
 - Bridges profits back via LI.FI
 
 **Key Functions:**
+
 ```solidity
 executeShort(indexToken, amountUSDC, leverage, acceptablePrice, sourceChain, lifiCalldata)
   → Opens GMX SHORT position with up to 50x leverage
-  
+
 closePosition(positionId, minExitPrice, bridgeBack, destinationChain, recipient, lifiCalldata)
   → Closes GMX SHORT, calculates P&L, bridges profits back
 
@@ -105,6 +108,7 @@ gmxPositionCallback(positionKey, isExecuted, isIncrease)
 GMX is a **decentralized perpetual exchange** on Arbitrum that allows leveraged trading (1-50x) without holding the underlying asset.
 
 **Why GMX?**
+
 - ✅ Real perpetual shorts (not fake swaps)
 - ✅ Up to 50x leverage
 - ✅ Decentralized (no KYC, no CEX risk)
@@ -114,6 +118,7 @@ GMX is a **decentralized perpetual exchange** on Arbitrum that allows leveraged 
 ### GMX Position Flow
 
 1. **Open SHORT:**
+
    ```
    NexusVault approves USDC → GMX Position Router
    Creates increase position request (isLong = false)
@@ -122,6 +127,7 @@ GMX is a **decentralized perpetual exchange** on Arbitrum that allows leveraged 
    ```
 
 2. **Track Position:**
+
    ```
    Query GMX Vault for position size, collateral, P&L
    Check unrealized profit/loss
@@ -145,6 +151,7 @@ GMX is a **decentralized perpetual exchange** on Arbitrum that allows leveraged 
 **Solution:** LI.FI bridges USDC cross-chain automatically.
 
 **Use Cases:**
+
 1. **Bridge IN:** Any chain → Arbitrum (for GMX execution)
 2. **Bridge OUT:** Arbitrum → Any chain (return profits to user)
 
@@ -170,8 +177,7 @@ NexusVault.executeShort(..., lifiCalldata);
 ✅ **Bridge aggregation:** LI.FI finds fastest/cheapest route  
 ✅ **Destination execution:** GMX short opens after bridge  
 ✅ **Profit repatriation:** Bridge profits back to original chain  
-✅ **Multi-chain support:** Works from Ethereum, Base, Optimism, Polygon  
-
+✅ **Multi-chain support:** Works from Ethereum, Base, Optimism, Polygon
 
 ## Setup
 
@@ -348,7 +354,7 @@ for pos in positions:
     print(f"  Collateral: ${pos['collateralUSDC'] / 1e6} USDC")
     print(f"  Leverage: {pos['leverage']}x")
     print(f"  Entry Price: ${pos['entryPrice'] / 1e30}")
-    
+
     # Get live P&L from GMX
     gmx_info = blockchain.get_gmx_position_info(pos['id'])
     print(f"  Unrealized P&L: ${gmx_info['delta'] / 1e30} {'profit' if gmx_info['hasProfit'] else 'loss'}")

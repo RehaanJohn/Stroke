@@ -3,14 +3,17 @@
 ## Arbitrum Mainnet
 
 ### GMX Protocol
+
 - **GMX Position Router**: `0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868`
 - **GMX Vault**: `0x489ee077994B6658eAfA855C308275EAd8097C4A`
 - **GMX Router**: `0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064`
 
 ### LI.FI
+
 - **LI.FI Diamond**: `0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE`
 
 ### Tokens (Arbitrum)
+
 - **USDC**: `0xaf88d065e77c8cC2239327C5EDb3A432268e5831`
 - **WETH**: `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1`
 - **WBTC**: `0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f`
@@ -34,6 +37,7 @@
 ## Environment Variables
 
 Update `.env`:
+
 ```bash
 # Arbitrum Mainnet
 RPC_URL=https://arb-mainnet.g.alchemy.com/v2/YOUR_KEY
