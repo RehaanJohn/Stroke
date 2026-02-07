@@ -64,8 +64,7 @@ export default function Home() {
         {/* Navigation */}
         <nav className="fixed top-0 w-full z-50 bg-black/30 backdrop-blur-xl border-b border-white/5">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-            </div>
+            <div className="flex items-center gap-3"></div>
             <div className="flex items-center gap-4">
               {/* Twitter Feed Icon */}
               <Link
@@ -106,7 +105,8 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-base text-white/50 mb-16 max-w-xl mx-auto font-light leading-relaxed">
-                AI-powered market detection → Cross-chain execution → Automated profit taking
+                AI-powered market detection → Cross-chain execution → Automated
+                profit taking
               </p>
               {isConnected ? (
                 <Link
@@ -211,128 +211,128 @@ export default function Home() {
 
             {/* Live Market Signals Section - Hidden by default */}
             {false && (
-            <div id="signals" className="mb-20">
-              <div className="text-center mb-10">
-                <div className="inline-flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/50">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
+              <div id="signals" className="mb-20">
+                <div className="text-center mb-10">
+                  <div className="inline-flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/50">
+                      <svg
+                        className="w-6 h-6 text-white"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </div>
+                    <h2 className="text-4xl font-black text-white tracking-tight">
+                      Market Signals
+                    </h2>
                   </div>
-                  <h2 className="text-4xl font-black text-white tracking-tight">
-                    Market Signals
-                  </h2>
+                  <p className="text-white/60 max-w-2xl mx-auto font-light">
+                    Real-time updates from regulators, institutions, and
+                    on-chain trackers
+                  </p>
                 </div>
-                <p className="text-white/60 max-w-2xl mx-auto font-light">
-                  Real-time updates from regulators, institutions, and on-chain
-                  trackers
-                </p>
-              </div>
 
-              {loadingTweets ? (
-                <div className="flex items-center justify-center py-20">
-                  <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-white/60 font-light">
-                      Loading signals...
+                {loadingTweets ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="text-center">
+                      <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
+                      <p className="text-white/60 font-light">
+                        Loading signals...
+                      </p>
+                    </div>
+                  </div>
+                ) : tweets.length === 0 ? (
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/5 rounded-2xl p-12 text-center">
+                    <div className="text-5xl mb-4">📡</div>
+                    <p className="text-white/80 mb-2 font-medium">
+                      No signals yet
+                    </p>
+                    <p className="text-white/50 text-sm font-light">
+                      Run the scraper to fetch market data
                     </p>
                   </div>
-                </div>
-              ) : tweets.length === 0 ? (
-                <div className="bg-white/5 backdrop-blur-xl border border-white/5 rounded-2xl p-12 text-center">
-                  <div className="text-5xl mb-4">📡</div>
-                  <p className="text-white/80 mb-2 font-medium">
-                    No signals yet
-                  </p>
-                  <p className="text-white/50 text-sm font-light">
-                    Run the scraper to fetch market data
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {tweets.map((tweet) => (
-                    <div
-                      key={tweet.id}
-                      className="bg-white/5 backdrop-blur-xl border border-white/5 rounded-xl p-5 hover:border-purple-500/30 transition-all group"
-                    >
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30">
-                          <span className="text-white text-sm font-bold">
-                            {tweet.username.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-white font-semibold truncate tracking-tight">
-                              @{tweet.username}
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {tweets.map((tweet) => (
+                      <div
+                        key={tweet.id}
+                        className="bg-white/5 backdrop-blur-xl border border-white/5 rounded-xl p-5 hover:border-purple-500/30 transition-all group"
+                      >
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30">
+                            <span className="text-white text-sm font-bold">
+                              {tweet.username.charAt(0).toUpperCase()}
                             </span>
-                            {[
-                              "elonmusk",
-                              "VitalikButerin",
-                              "saylor",
-                              "cz_binance",
-                              "SECgov",
-                              "federalreserve",
-                              "WhiteHouse",
-                            ].includes(tweet.username) && (
-                              <svg
-                                className="w-4 h-4 text-purple-400 flex-shrink-0"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                            )}
                           </div>
-                          <span className="text-white/50 text-xs font-light">
-                            {tweet.time}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-white font-semibold truncate tracking-tight">
+                                @{tweet.username}
+                              </span>
+                              {[
+                                "elonmusk",
+                                "VitalikButerin",
+                                "saylor",
+                                "cz_binance",
+                                "SECgov",
+                                "federalreserve",
+                                "WhiteHouse",
+                              ].includes(tweet.username) && (
+                                <svg
+                                  className="w-4 h-4 text-purple-400 flex-shrink-0"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              )}
+                            </div>
+                            <span className="text-white/50 text-xs font-light">
+                              {tweet.time}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-white/80 text-sm leading-relaxed mb-3 line-clamp-3 group-hover:line-clamp-none font-light">
+                          {tweet.text}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-white/50 font-light">
+                          <span className="flex items-center gap-1">
+                            💬 {tweet.replies}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            🔄 {tweet.retweets}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            ❤️ {tweet.likes}
                           </span>
                         </div>
                       </div>
-                      <p className="text-white/80 text-sm leading-relaxed mb-3 line-clamp-3 group-hover:line-clamp-none font-light">
-                        {tweet.text}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-white/50 font-light">
-                        <span className="flex items-center gap-1">
-                          💬 {tweet.replies}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          🔄 {tweet.retweets}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          ❤️ {tweet.likes}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="text-center mt-10">
-                <Link
-                  href="/portfolio"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-white transition-all backdrop-blur-sm font-medium"
-                >
-                  View All Signals
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                    ))}
+                  </div>
+                )}
+                <div className="text-center mt-10">
+                  <Link
+                    href="/portfolio"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-white transition-all backdrop-blur-sm font-medium"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </Link>
+                    View All Signals
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </Link>
+                </div>
               </div>
-            </div>
             )}
 
             {/* CTA Section - Simplified */}
@@ -395,9 +395,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="border-t border-white/5 bg-black/30 backdrop-blur-xl">
           <div className="max-w-7xl mx-auto px-6 py-6 text-center text-white/40 font-light text-xs">
-            <p>
-              Powered by LI.FI · AI x Smart App
-            </p>
+            <p>Powered by LI.FI · AI x Smart App</p>
           </div>
         </footer>
       </div>
