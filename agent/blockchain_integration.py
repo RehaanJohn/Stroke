@@ -147,7 +147,7 @@ class BlockchainIntegration:
             
             logger.info(f"\n🎯 EXECUTING GMX SHORT")
             logger.info(f"Token: {index_token} ({token_address})")
-            logger.info(f"Collateral: {collateral_usdc / 1e6:.2f} USDC")
+            logger.info(f"Collateral: {collateral_usdc} USDC")
             logger.info(f"Leverage: {leverage}x")
             logger.info(f"Confidence: {confidence}%")
             
@@ -210,10 +210,10 @@ class BlockchainIntegration:
             return None
         
         try:
-            logger.info(f"\n🎯 EXECUTING DIP BUY")
+            logger.info(f"🎯 EXECUTING DIP BUY")
             logger.info(f"Token: {token}")
             logger.info(f"Chain: {chain}")
-            logger.info(f"Amount: {amount_usdc / 1e6:.2f} USDC")
+            logger.info(f"Amount: {amount_usdc} USDC")
             logger.info(f"Take Profit: ${take_profit_price:.8f}")
             logger.info(f"Stop Loss: ${stop_loss_price:.8f}")
             logger.info(f"Confidence: {confidence}%")

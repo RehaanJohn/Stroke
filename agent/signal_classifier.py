@@ -264,13 +264,14 @@ class SignalClassifier:
         TODO: Integrate with real price oracle (CoinGecko, DEX aggregator)
         For now, returns mock data
         """
+        import time
+        # Alternate between rugs and pumps to test both strategies
+        is_pump = int(time.time() / 10) % 2 == 0
         
-        # Mock price data
-        # In production, query CoinGecko API or on-chain oracle
         return {
-            'current': 0.0000012,
-            'change_24h': -85.0,  # -85% drop (post-rug)
-            'volume_spike': False,
+            'current': 1.0,
+            'change_24h': 25.0 if is_pump else -85.0,  # 25% pump or 85% drop
+            'volume_spike': True if is_pump else False,
             'liquidity': 50000
         }
     

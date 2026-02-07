@@ -22,8 +22,13 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     setMounted(true);
   }, []);
 
+  // Don't render providers until client-side to avoid SSR hydration issues
   if (!mounted) {
-    return null;
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
   }
 
   return (

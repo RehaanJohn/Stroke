@@ -10,28 +10,26 @@ module.exports = async ({ getNamedAccounts, deployments, network }) => {
   const positionRegistry = await get("PositionRegistry");
   const signalOracle = await get("SignalOracle");
 
-  // Network-specific addresses
-  let USDC, GMX_POSITION_ROUTER, GMX_VAULT;
+  // Arbitrum addresses
+  let USDC = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"; // Arbitrum One
+  let GMX_POSITION_ROUTER = "0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868";
+  let GMX_VAULT = "0x489ee077994B6658eAfA855C308275EAd8097C4A";
 
-  if (network.name === "arbitrum") {
-    USDC = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
-    GMX_POSITION_ROUTER = "0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868";
-    GMX_VAULT = "0x489ee077994B6658eAfA855C308275EAd8097C4A";
-  } else if (network.name === "arbitrumSepolia") {
-    // Circle USDC on Arbitrum Sepolia
-    USDC = "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d";
-    // GMX V1 is not on Sepolia usually, but we use these for the ABI/Mocks if needed
-    // or use actual Sepolia GMX if available. For now, we'll keep placeholders 
-    // or use the ones provided if they exist.
-    GMX_POSITION_ROUTER = "0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868";
-    GMX_VAULT = "0x489ee077994B6658eAfA855C308275EAd8097C4A";
-  } else {
-    // Fallback/Mock for local
-    USDC = "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d";
-    GMX_POSITION_ROUTER = "0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868";
-    GMX_VAULT = "0x489ee077994B6658eAfA855C308275EAd8097C4A";
+  if (network.name === "arbitrumSepolia") {
+    USDC = "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d"; // Arbitrum Sepolia
+    console.log("Deploying MockGMX for Testnet...");
+    const mockGMX = await deploy("MockGMX", {
+      from: deployer,
+      args: [],
+      log: true,
+    });
+    GMX_POSITION_ROUTER = mockGMX.address;
+    GMX_VAULT = mockGMX.address;
+    console.log(`✅ MockGMX deployed to: ${mockGMX.address}`);
   }
 
+  // For testnet/localhost, we'll use mock addresses
+  const isMainnet = network.name === "arbitrum";
   const agentAddress = agent || deployer;
 
   // Deploy a simple price oracle (for demo - in production use Chainlink)

@@ -1,0 +1,827 @@
+
+> @nexus/blockchain-integration@1.0.0 dev
+> ts-node src/index.ts
+
+📡 LI.FI SDK initialized in TESTNET mode
+[Warning] Invalid Fragment "function getOpenPositions() external view returns (tuple[])": bad start
+(node:52908) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+============================================================
+🚀 NEXUS BLOCKCHAIN INTEGRATION SERVICE
+============================================================
+📡 Listening on port 8001
+🔗 Network: arbitrum
+📊 Vault: 0xcb310b216BCE07C13D4809634F6C230A629cEec2
+============================================================
+
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 2500 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 3750 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 2500 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 2500 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 3750 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 2500 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 2500 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 3750 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 3750 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 3750 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 3750 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 3750 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 2500 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 2500 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}
+
+🎯 EXECUTING SHORT
+Token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+Chain: arbitrum
+Amount: 5000 USDC
+Leverage: 2x
+🔄 Fetching route from LI.FI...
+❌ Short execution failed: ValidationError: Invalid routes request.
+    at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+    ... 8 lines matching cause stack trace ...
+    at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+  step: undefined,
+  process: undefined,
+  code: 1001,
+  name: 'SDKError',
+  cause: ValidationError: Invalid routes request.
+      at getRoutes (/Users/jonathan/elco/Stroke/blockchain/node_modules/@lifi/sdk/src/services/api.ts:152:24)
+      at LiFiService.getShortRoute (/Users/jonathan/elco/Stroke/blockchain/src/services/lifi.service.ts:113:35)
+      at /Users/jonathan/elco/Stroke/blockchain/src/index.ts:90:37
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:149:13)
+      at Route.dispatch (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/route.js:119:3)
+      at Layer.handle [as handle_request] (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/layer.js:95:5)
+      at /Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:284:15
+      at router.process_params (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:346:12)
+      at next (/Users/jonathan/elco/Stroke/blockchain/node_modules/express/lib/router/index.js:280:10) {
+    code: 1001,
+    cause: undefined
+  }
+}

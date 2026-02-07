@@ -27,14 +27,58 @@ export class LiFiService {
     'arbitrum': '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
     'arbitrum-sepolia': '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
     'base': '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-    'optimism': '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
+    'optimism': '0x0b2C639c433813f4Aa9D7837CAf62653d097Ff85',
     'polygon': '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
   };
 
   constructor() {
+    const isTestnet = process.env.NETWORK === 'arbitrum-sepolia' || process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true';
+
     createConfig({
       integrator: 'nexus-autonomous-agent'
     });
+
+    console.log(`📡 LiFiService: Initialized in ${isTestnet ? 'TESTNET' : 'MAINNET'} mode`);
+  }
+
+  /**
+   * Get USDC address for a chain
+   */
+  getUSDCAddress(chain: string): string {
+    const network = process.env.NETWORK || 'arbitrum';
+    const isTestnet = network === 'arbitrum-sepolia' || process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true';
+
+    // If we are on testnet, use sepolia addresses for known chains
+    if (isTestnet) {
+      if (chain.toLowerCase() === 'arbitrum' || chain.toLowerCase() === 'arbitrum-sepolia') {
+        return this.usdcAddresses['arbitrum-sepolia'];
+      }
+      // Add other testnet mappings as needed (e.g. base-sepolia)
+    }
+
+    const address = this.usdcAddresses[chain.toLowerCase()];
+    if (!address) {
+      throw new Error(`No USDC address for chain: ${chain}`);
+    }
+    return address;
+  }
+
+  /**
+   * Get chain ID for a chain name
+   */
+  getChainId(chain: string): number {
+    const network = process.env.NETWORK || 'arbitrum';
+    const isTestnet = network === 'arbitrum-sepolia' || process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true';
+
+    if (isTestnet && (chain.toLowerCase() === 'arbitrum' || chain.toLowerCase() === 'arbitrum-sepolia')) {
+      return this.chainIds['arbitrum-sepolia'];
+    }
+
+    const id = this.chainIds[chain.toLowerCase()];
+    if (!id) {
+      throw new Error(`Unknown chain: ${chain}`);
+    }
+    return id;
   }
 
   /**
@@ -66,11 +110,14 @@ export class LiFiService {
       }
     };
 
+    console.log(`📡 LiFiService: Fetching route for ${amountUSDC} USDC from ${fromChain} to ${toChain}...`);
     const result = await getRoutes(routesRequest);
     if (!result.routes || result.routes.length === 0) {
+      console.error('❌ LiFiService: No routes found', routesRequest);
       throw new Error(`No routes found from ${fromChain} to ${toChain}`);
     }
 
+    console.log(`✅ LiFiService: Found ${result.routes.length} routes. Best bridge: ${result.routes[0].steps[0]?.toolDetails?.name}`);
     return result.routes[0];
   }
 
@@ -109,27 +156,5 @@ export class LiFiService {
     }
 
     return result.routes[0];
-  }
-
-  /**
-   * Get USDC address for a chain
-   */
-  getUSDCAddress(chain: string): string {
-    const address = this.usdcAddresses[chain.toLowerCase()];
-    if (!address) {
-      throw new Error(`No USDC address for chain: ${chain}`);
-    }
-    return address;
-  }
-
-  /**
-   * Get chain ID for a chain name
-   */
-  getChainId(chain: string): number {
-    const id = this.chainIds[chain.toLowerCase()];
-    if (!id) {
-      throw new Error(`Unknown chain: ${chain}`);
-    }
-    return id;
   }
 }

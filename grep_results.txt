@@ -1,0 +1,64 @@
+./BLOCKCHAIN_INTEGRATION.md:118:   NexusVault approves USDC → GMX Position Router
+./BLOCKCHAIN_INTEGRATION.md:241:cast send $NEXUS_VAULT "approveToken(address,bool)" \
+./BLOCKCHAIN_INTEGRATION.md:246:cast send $NEXUS_VAULT "approveToken(address,bool)" \
+./BLOCKCHAIN_INTEGRATION.md:432:- **Whitelist Tokens**: Only approved tokens can be shorted
+./X_SCRAPPER_ANALYSIS.md:145:- **Banking Stress**: bank run, liquidity crisis, deposit freeze, etc.
+./app/components/BlockchainMonitor.tsx:36:    "name": "deposit",
+./app/components/BlockchainMonitor.tsx:56:    "name": "approve",
+./app/components/BlockchainMonitor.tsx:89:  const [depositAmount, setDepositAmount] = useState('');
+./app/components/BlockchainMonitor.tsx:169:  const { writeContract: approveUSDC, data: approveHash } = useWriteContract();
+./app/components/BlockchainMonitor.tsx:170:  const { writeContract: depositToVault, data: depositHash } = useWriteContract();
+./app/components/BlockchainMonitor.tsx:172:  // Wait for approve transaction
+./app/components/BlockchainMonitor.tsx:174:    hash: approveHash,
+./app/components/BlockchainMonitor.tsx:177:  // Wait for deposit transaction
+./app/components/BlockchainMonitor.tsx:179:    hash: depositHash,
+./app/components/BlockchainMonitor.tsx:182:  // Handle approve success
+./app/components/BlockchainMonitor.tsx:190:  // Handle deposit success
+./app/components/BlockchainMonitor.tsx:216:  // Handle approve
+./app/components/BlockchainMonitor.tsx:218:    if (!depositAmount || !NEXUS_VAULT_ADDRESS) return;
+./app/components/BlockchainMonitor.tsx:221:      const amount = parseUnits(depositAmount, 6);
+./app/components/BlockchainMonitor.tsx:222:      approveUSDC({
+./app/components/BlockchainMonitor.tsx:225:        functionName: 'approve',
+./app/components/BlockchainMonitor.tsx:234:  // Handle deposit
+./app/components/BlockchainMonitor.tsx:236:    if (!depositAmount || !NEXUS_VAULT_ADDRESS) return;
+./app/components/BlockchainMonitor.tsx:239:      const amount = parseUnits(depositAmount, 6);
+./app/components/BlockchainMonitor.tsx:240:      depositToVault({
+./app/components/BlockchainMonitor.tsx:243:        functionName: 'deposit',
+./app/components/BlockchainMonitor.tsx:253:  // Check if amount is approved
+./app/components/BlockchainMonitor.tsx:254:  const depositAmountBigInt = depositAmount ? parseUnits(depositAmount, 6) : BigInt(0);
+./app/components/BlockchainMonitor.tsx:255:  const isAmountApproved = allowance ? (allowance as bigint) >= depositAmountBigInt : false;
+./app/components/BlockchainMonitor.tsx:316:                  value={depositAmount}
+./app/components/BlockchainMonitor.tsx:337:                  disabled={!depositAmount || parseFloat(depositAmount) <= 0 || isApproving || isApproveLoading}
+./app/components/BlockchainMonitor.tsx:352:                  disabled={!depositAmount || parseFloat(depositAmount) <= 0 || isDepositing || isDepositLoading}
+./app/components/BlockchainMonitor.tsx:372:                <p className="text-green-400">✓ Approved! Now you can deposit</p>
+./app/components/BlockchainMonitor.tsx:383:            🔌 Connect your wallet to deposit funds into the vault
+./INTEGRATION_COMPLETE.md:280:- ✅ **Token Whitelist**: Only approved tokens can be shorted
+./test/NexusVault.test.js:95:    it("Should approve WETH for shorting", async function () {
+./test/NexusVault.test.js:96:      const isApproved = await nexusVault.approvedTokens(WETH_ADDRESS);
+./test/NexusVault.test.js:214:      await vault2.connect(deployer).approveToken(WBTC, true);
+./deploy/03_deploy_nexus_vault.js:82:  await (await Vault.approveToken(WETH, true)).wait();
+./deploy/03_deploy_nexus_vault.js:83:  console.log(`✅ WETH approved for shorting`);
+./deploy/03_deploy_nexus_vault.js:85:  await (await Vault.approveToken(WBTC, true)).wait();
+./deploy/03_deploy_nexus_vault.js:86:  console.log(`✅ WBTC approved for shorting`);
+./contracts/GMX_LI.FI_ADDRESSES.md:70:cast send $NEXUS_VAULT "approveToken(address,bool)" $WETH_ADDRESS true \
+./contracts/NexusVault.sol:46:    mapping(address => bool) public approvedTokens;
+./contracts/NexusVault.sol:49:    mapping(string => bool) public approvedChains;
+./contracts/NexusVault.sol:167:    event TokenApproved(address indexed token, bool approved);
+./contracts/NexusVault.sol:168:    event ChainApproved(string chain, bool approved);
+./contracts/NexusVault.sol:208:        // Only Arbitrum is approved (GMX is only on Arbitrum)
+./contracts/NexusVault.sol:209:        approvedChains["arbitrum"] = true;
+./contracts/NexusVault.sol:241:        require(approvedTokens[indexToken], "Token not approved");
+./contracts/NexusVault.sol:288:        IERC20(USDC).approve(address(gmxPositionRouter), collateralAmount);
+./contracts/NexusVault.sol:669:    function approveToken(address token, bool approved) external onlyOwner {
+./contracts/NexusVault.sol:670:        approvedTokens[token] = approved;
+./contracts/NexusVault.sol:671:        emit TokenApproved(token, approved);
+./contracts/NexusVault.sol:674:    function approveChain(string calldata chain, bool approved) external onlyOwner {
+./contracts/NexusVault.sol:675:        approvedChains[chain] = approved;
+./contracts/NexusVault.sol:676:        emit ChainApproved(chain, approved);
+./create_sample_db.py:78:        'text': 'A whale just deposited 50,000 ETH ($125M) to Coinbase. Possible sell signal?',
+Binary file ./agent/__pycache__/claude_analyzer.cpython-311.pyc matches
+Binary file ./agent/__pycache__/claude_analyzer.cpython-314.pyc matches
+./agent/gemini_analyzer.py:302:                risk_factors.append("Token inflation approved")
+./agent/claude_analyzer.py:298:                risk_factors.append("Token inflation approved")
+Binary file ./x_scrapper/crypto_tweets.db matches
+./x_scrapper/scrape_crypto_fast.py:130:                    'systemic risk', 'deposit freeze', 'withdrawal limits',
