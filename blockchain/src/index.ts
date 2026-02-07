@@ -10,7 +10,9 @@ import { LiFiService } from './services/lifi.service';
 import { ContractService } from './services/contract.service';
 import { SignalPublisher } from './services/signal-publisher.service';
 
-dotenv.config();
+import path from 'path';
+
+dotenv.config({ path: path.join(process.cwd(), '../.env') });
 
 const app = express();
 const PORT = process.env.BLOCKCHAIN_PORT || 8001;
@@ -27,7 +29,7 @@ const signalPublisher = new SignalPublisher();
 /**
  * Health check
  */
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', service: 'nexus-blockchain-integration' });
 });
 
@@ -35,7 +37,7 @@ app.get('/health', (req, res) => {
  * Publish signals to SignalOracle
  * Called by Python agent when new signals detected
  */
-app.post('/api/signals/publish', async (req, res) => {
+app.post('/api/signals/publish', async (req: Request, res: Response) => {
   try {
     const { signals } = req.body;
 
@@ -58,40 +60,51 @@ app.post('/api/signals/publish', async (req, res) => {
  * Execute short position
  * Called by Python agent when confidence threshold met
  */
-app.post('/api/shorts/execute', async (req, res) => {
+app.post('/api/shorts/execute', async (req: Request, res: Response) => {
   try {
     const {
+      indexToken,
       tokenAddress,
       chain,
+      collateralUSDC,
       amountUSDC,
-      fromChain = 'arbitrum' // Default source chain
+      leverage,
+      sourceChain,
+      fromChain = 'arbitrum'
     } = req.body;
 
+    // Support both agent and frontend param names
+    const finalTokenAddress = tokenAddress || indexToken;
+    const finalChain = chain || 'arbitrum';
+    const finalAmount = amountUSDC || collateralUSDC;
+    const finalFromChain = fromChain || sourceChain || 'arbitrum';
+
     console.log(`\n🎯 EXECUTING SHORT`);
-    console.log(`Token: ${tokenAddress}`);
-    console.log(`Chain: ${chain}`);
-    console.log(`Amount: ${amountUSDC / 1e6} USDC`);
+    console.log(`Token: ${finalTokenAddress}`);
+    console.log(`Chain: ${finalChain}`);
+    console.log(`Amount: ${finalAmount / 1e6} USDC`);
+    console.log(`Leverage: ${leverage}x`);
 
     // Step 1: Get route from LI.FI
     console.log('🔄 Fetching route from LI.FI...');
     const route = await lifiService.getShortRoute({
-      fromChain,
-      toChain: chain,
-      tokenAddress,
-      amountUSDC
+      fromChain: finalFromChain,
+      toChain: finalChain,
+      tokenAddress: finalTokenAddress,
+      amountUSDC: finalAmount
     });
 
     console.log(`✅ Route found: ${route.steps.length} steps`);
-    console.log(`Estimated gas: ${route.gasCosts?.estimate || 'unknown'}`);
+    console.log(`Estimated gas: ${route.gasCostUSD || 'unknown'}`);
 
     // Step 2: Execute via NexusVault
     console.log('📝 Executing via NexusVault...');
     const tx = await contractService.executeShort({
-      tokenAddress,
-      chain,
-      amountUSDC,
-      lifiCalldata: route.transactionRequest.data,
-      lifiDiamond: route.transactionRequest.to
+      tokenAddress: finalTokenAddress,
+      chain: finalChain,
+      amountUSDC: finalAmount,
+      lifiCalldata: route.steps[0]?.transactionRequest?.data || '',
+      lifiDiamond: route.steps[0]?.transactionRequest?.to || ''
     });
 
     console.log(`✅ Short executed! TX: ${tx.hash}`);
@@ -103,7 +116,7 @@ app.post('/api/shorts/execute', async (req, res) => {
       positionId: tx.positionId,
       route: {
         steps: route.steps.length,
-        estimatedGas: route.gasCosts?.estimate
+        estimatedGas: route.gasCostUSD
       }
     });
   } catch (error: any) {
@@ -113,10 +126,49 @@ app.post('/api/shorts/execute', async (req, res) => {
 });
 
 /**
+ * Execute dip buy
+ */
+app.post('/api/dip-buys/execute', async (req: Request, res: Response) => {
+  try {
+    const {
+      token,
+      chain,
+      amountUSDC,
+      minTokensOut,
+      takeProfitPrice,
+      stopLossPrice
+    } = req.body;
+
+    console.log(`\n🎯 EXECUTING DIP BUY`);
+    console.log(`Token: ${token}`);
+    console.log(`Chain: ${chain}`);
+    console.log(`Amount: ${amountUSDC / 1e6} USDC`);
+
+    const result = await contractService.executeDipBuy({
+      tokenAddress: token,
+      chain,
+      amountUSDC,
+      minTokensOut,
+      takeProfitPrice,
+      stopLossPrice
+    });
+
+    res.json({
+      success: true,
+      txHash: result.hash,
+      positionId: result.positionId
+    });
+  } catch (error: any) {
+    console.error('❌ Dip buy failed:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
  * Close short position
  * Called by Python agent when take-profit/stop-loss hit
  */
-app.post('/api/shorts/close', async (req, res) => {
+app.post('/api/shorts/close', async (req: Request, res: Response) => {
   try {
     const {
       positionId,
@@ -141,8 +193,8 @@ app.post('/api/shorts/close', async (req, res) => {
     console.log('📝 Closing position...');
     const tx = await contractService.closePosition({
       positionId,
-      lifiCalldata: route.transactionRequest.data,
-      lifiDiamond: route.transactionRequest.to
+      lifiCalldata: route.steps[0]?.transactionRequest?.data || '',
+      lifiDiamond: route.steps[0]?.transactionRequest?.to || ''
     });
 
     console.log(`✅ Position closed! TX: ${tx.hash}`);
@@ -198,7 +250,7 @@ app.post('/api/bridge/quote', async (req: Request, res: Response) => {
         steps: route.steps.length,
         fromAmount: route.fromAmount,
         toAmount: route.toAmount,
-        gasCostUSD: route.gasCosts?.[0]?.amountUSD || '0',
+        gasCostUSD: route.gasCostUSD || '0',
         bridge: route.steps[0]?.toolDetails?.name || 'unknown'
       }
     });
@@ -211,7 +263,7 @@ app.post('/api/bridge/quote', async (req: Request, res: Response) => {
 /**
  * Get performance metrics
  */
-app.get('/api/metrics', async (req, res) => {
+app.get('/api/metrics', async (req: Request, res: Response) => {
   try {
     const metrics = await contractService.getPerformanceMetrics();
 
@@ -235,14 +287,14 @@ app.get('/api/metrics', async (req, res) => {
 /**
  * Get open positions
  */
-app.get('/api/positions/open', async (req, res) => {
+app.get('/api/positions/open', async (req: Request, res: Response) => {
   try {
     const positions = await contractService.getOpenPositions();
 
     res.json({
       success: true,
       count: positions.length,
-      positions: positions.map(p => ({
+      positions: positions.map((p: any) => ({
         id: p.id.toString(),
         token: p.tokenAddress,
         chain: p.chain,

@@ -318,6 +318,8 @@ class OrchestrationEngine:
             
             if result:
                 logger.info(f"✅ GMX SHORT opened: Position ID {result.get('positionId')}")
+            else:
+                logger.warning(f"⚠️ GMX SHORT skipped or failed for {plan.token_symbol}")
             
         except Exception as e:
             logger.error(f"GMX SHORT failed for {plan.token_symbol}: {e}")
@@ -333,18 +335,21 @@ class OrchestrationEngine:
         adjusted_confidence = int(plan.confidence * 0.7)  # 70% of original confidence
         
         try:
-            result = self.blockchain.execute_short(
-                index_token=correlated,
-                collateral_usdc=int(adjusted_size * 1_000_000),
-                leverage=2,  # Conservative 2x leverage
-                confidence=adjusted_confidence,
-                source_chain='arbitrum'
-            )
-            
-            logger.info(
-                f"✅ CORRELATED SHORT opened: {correlated} for {plan.token_symbol} "
-                f"(Position ID {result.get('positionId')})"
-            )
+                result = self.blockchain.execute_short(
+                    index_token=correlated,
+                    collateral_usdc=int(adjusted_size * 1_000_000),
+                    leverage=2,  # Conservative 2x leverage
+                    confidence=adjusted_confidence,
+                    source_chain='arbitrum'
+                )
+                
+                if result:
+                    logger.info(
+                        f"✅ CORRELATED SHORT opened: {correlated} for {plan.token_symbol} "
+                        f"(Position ID {result.get('positionId')})"
+                    )
+                else:
+                    logger.warning(f"⚠️ CORRELATED SHORT skipped or failed for {plan.token_symbol}")
             
         except Exception as e:
             logger.error(f"CORRELATED SHORT failed for {plan.token_symbol}: {e}")
@@ -369,19 +374,22 @@ class OrchestrationEngine:
         stop_loss = current_price * 0.85   # -15% stop loss
         
         try:
-            result = self.blockchain.execute_dip_buy(
-                token=plan.token_address or '',
-                chain=plan.chain or 'base',
-                amount_usdc=int(position_size * 1_000_000),
-                take_profit_price=take_profit,
-                stop_loss_price=stop_loss,
-                confidence=plan.confidence
-            )
-            
-            logger.info(
-                f"✅ DIP BUY executed for {plan.token_symbol}: "
-                f"Entry ${current_price:.8f}, Target ${take_profit:.8f} (+40%)"
-            )
+                result = self.blockchain.execute_dip_buy(
+                    token=plan.token_address or '',
+                    chain=plan.chain or 'base',
+                    amount_usdc=int(position_size * 1_000_000),
+                    take_profit_price=take_profit,
+                    stop_loss_price=stop_loss,
+                    confidence=plan.confidence
+                )
+                
+                if result:
+                    logger.info(
+                        f"✅ DIP BUY executed for {plan.token_symbol}: "
+                        f"Entry ${current_price:.8f}, Target ${take_profit:.8f} (+40%)"
+                    )
+                else:
+                    logger.warning(f"⚠️ DIP BUY skipped or failed for {plan.token_symbol}")
             
         except Exception as e:
             logger.error(f"DIP BUY failed for {plan.token_symbol}: {e}")

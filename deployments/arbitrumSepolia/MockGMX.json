@@ -1,0 +1,228 @@
+{
+  "address": "0x2fF7776F1bE920666ED2B6b288D9471762C91992",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "createDecreasePosition",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "createIncreasePosition",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "positionRouter",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "vault",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x00a18f07dcef2e0a778a3403e8fbfdcb26d9832ac933a09f9c098a4b31fc31a7",
+  "receipt": {
+    "to": null,
+    "from": "0x670298e73c5E6735E1fdBeD858Be1d6A26db00b1",
+    "contractAddress": "0x2fF7776F1bE920666ED2B6b288D9471762C91992",
+    "transactionIndex": 1,
+    "gasUsed": "337558",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x9aee1e778fa66221e07da068858f2cf62c03a1d973c59012a1c0f8c9efe752b4",
+    "transactionHash": "0x00a18f07dcef2e0a778a3403e8fbfdcb26d9832ac933a09f9c098a4b31fc31a7",
+    "logs": [],
+    "blockNumber": 240474970,
+    "cumulativeGasUsed": "337558",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "21c3d6ac86f357fef150d9ba4cbcdc53",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"createDecreasePosition\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"createIncreasePosition\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"positionRouter\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"vault\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/MockGMX.sol\":\"MockGMX\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/MockGMX.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\ncontract MockGMX {\\n    address public positionRouter;\\n    address public vault;\\n\\n    constructor() {\\n        positionRouter = address(this);\\n        vault = address(this);\\n    }\\n\\n    function createIncreasePosition(\\n        address[] memory /*_path*/,\\n        address /*_indexToken*/,\\n        uint256 /*_amountIn*/,\\n        uint256 /*_minOut*/,\\n        uint256 /*_sizeDelta*/,\\n        bool /*_isLong*/,\\n        uint256 /*_acceptablePrice*/,\\n        uint256 /*_executionFee*/,\\n        bytes32 /*_referralCode*/,\\n        address /*_callbackTarget*/\\n    ) external payable returns (bytes32) {\\n        return keccak256(abi.encodePacked(block.timestamp, msg.sender));\\n    }\\n\\n    function createDecreasePosition(\\n        address[] memory /*_path*/,\\n        address /*_indexToken*/,\\n        uint256 /*_collateralDelta*/,\\n        uint256 /*_sizeDelta*/,\\n        bool /*_isLong*/,\\n        address /*_receiver*/,\\n        uint256 /*_acceptablePrice*/,\\n        uint256 /*_minOut*/,\\n        uint256 /*_executionFee*/,\\n        bool /*_withdrawETH*/,\\n        address /*_callbackTarget*/\\n    ) external payable returns (bytes32) {\\n        return keccak256(abi.encodePacked(block.timestamp, msg.sender));\\n    }\\n}\\n\",\"keccak256\":\"0xbc4322b84c45d5edb53b644a20b4001f228e8cb1253184544b537f196fa44211\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060008054306001600160a01b0319918216811783556001805490921617905561040b90819061004090396000f3fe60806040526004361061003f5760003560e01c806361ef161f146100445780637be7d14114610081578063f2ae372f146100a2578063fbfa77cf146100b5575b600080fd5b34801561005057600080fd5b50600054610064906001600160a01b031681565b6040516001600160a01b0390911681526020015b60405180910390f35b61009461008f366004610266565b6100d5565b604051908152602001610078565b6100946100b036600461032a565b61012c565b3480156100c157600080fd5b50600154610064906001600160a01b031681565b6000423360405160200161010592919091825260601b6bffffffffffffffffffffffff1916602082015260340190565b6040516020818303038152906040528051906020012090509b9a5050505050505050505050565b6000423360405160200161015c92919091825260601b6bffffffffffffffffffffffff1916602082015260340190565b6040516020818303038152906040528051906020012090509a9950505050505050505050565b634e487b7160e01b600052604160045260246000fd5b80356001600160a01b03811681146101af57600080fd5b919050565b600082601f8301126101c557600080fd5b8135602067ffffffffffffffff808311156101e2576101e2610182565b8260051b604051601f19603f8301168101818110848211171561020757610207610182565b60405293845285810183019383810192508785111561022557600080fd5b83870191505b8482101561024b5761023c82610198565b8352918301919083019061022b565b979650505050505050565b803580151581146101af57600080fd5b60008060008060008060008060008060006101608c8e03121561028857600080fd5b8b3567ffffffffffffffff81111561029f57600080fd5b6102ab8e828f016101b4565b9b50506102ba60208d01610198565b995060408c0135985060608c013597506102d660808d01610256565b96506102e460a08d01610198565b955060c08c0135945060e08c013593506101008c013592506103096101208d01610256565b91506103186101408d01610198565b90509295989b509295989b9093969950565b6000806000806000806000806000806101408b8d03121561034a57600080fd5b8a3567ffffffffffffffff81111561036157600080fd5b61036d8d828e016101b4565b9a505061037c60208c01610198565b985060408b0135975060608b0135965060808b0135955061039f60a08c01610256565b945060c08b0135935060e08b013592506101008b013591506103c46101208c01610198565b90509295989b9194979a509295985056fea26469706673582212205e473058938ad85aca4212dbdc33b67cc727f6f28386a2fa601f7cbd11fabcfb64736f6c63430008140033",
+  "deployedBytecode": "0x60806040526004361061003f5760003560e01c806361ef161f146100445780637be7d14114610081578063f2ae372f146100a2578063fbfa77cf146100b5575b600080fd5b34801561005057600080fd5b50600054610064906001600160a01b031681565b6040516001600160a01b0390911681526020015b60405180910390f35b61009461008f366004610266565b6100d5565b604051908152602001610078565b6100946100b036600461032a565b61012c565b3480156100c157600080fd5b50600154610064906001600160a01b031681565b6000423360405160200161010592919091825260601b6bffffffffffffffffffffffff1916602082015260340190565b6040516020818303038152906040528051906020012090509b9a5050505050505050505050565b6000423360405160200161015c92919091825260601b6bffffffffffffffffffffffff1916602082015260340190565b6040516020818303038152906040528051906020012090509a9950505050505050505050565b634e487b7160e01b600052604160045260246000fd5b80356001600160a01b03811681146101af57600080fd5b919050565b600082601f8301126101c557600080fd5b8135602067ffffffffffffffff808311156101e2576101e2610182565b8260051b604051601f19603f8301168101818110848211171561020757610207610182565b60405293845285810183019383810192508785111561022557600080fd5b83870191505b8482101561024b5761023c82610198565b8352918301919083019061022b565b979650505050505050565b803580151581146101af57600080fd5b60008060008060008060008060008060006101608c8e03121561028857600080fd5b8b3567ffffffffffffffff81111561029f57600080fd5b6102ab8e828f016101b4565b9b50506102ba60208d01610198565b995060408c0135985060608c013597506102d660808d01610256565b96506102e460a08d01610198565b955060c08c0135945060e08c013593506101008c013592506103096101208d01610256565b91506103186101408d01610198565b90509295989b509295989b9093969950565b6000806000806000806000806000806101408b8d03121561034a57600080fd5b8a3567ffffffffffffffff81111561036157600080fd5b61036d8d828e016101b4565b9a505061037c60208c01610198565b985060408b0135975060608b0135965060808b0135955061039f60a08c01610256565b945060c08b0135935060e08b013592506101008b013591506103c46101208c01610198565b90509295989b9194979a509295985056fea26469706673582212205e473058938ad85aca4212dbdc33b67cc727f6f28386a2fa601f7cbd11fabcfb64736f6c63430008140033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3,
+        "contract": "contracts/MockGMX.sol:MockGMX",
+        "label": "positionRouter",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 5,
+        "contract": "contracts/MockGMX.sol:MockGMX",
+        "label": "vault",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_address"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      }
+    }
+  }
+}

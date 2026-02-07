@@ -1,0 +1,36 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/MockGMX.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract MockGMX {\n    address public positionRouter;\n    address public vault;\n\n    constructor() {\n        positionRouter = address(this);\n        vault = address(this);\n    }\n\n    function createIncreasePosition(\n        address[] memory /*_path*/,\n        address /*_indexToken*/,\n        uint256 /*_amountIn*/,\n        uint256 /*_minOut*/,\n        uint256 /*_sizeDelta*/,\n        bool /*_isLong*/,\n        uint256 /*_acceptablePrice*/,\n        uint256 /*_executionFee*/,\n        bytes32 /*_referralCode*/,\n        address /*_callbackTarget*/\n    ) external payable returns (bytes32) {\n        return keccak256(abi.encodePacked(block.timestamp, msg.sender));\n    }\n\n    function createDecreasePosition(\n        address[] memory /*_path*/,\n        address /*_indexToken*/,\n        uint256 /*_collateralDelta*/,\n        uint256 /*_sizeDelta*/,\n        bool /*_isLong*/,\n        address /*_receiver*/,\n        uint256 /*_acceptablePrice*/,\n        uint256 /*_minOut*/,\n        uint256 /*_executionFee*/,\n        bool /*_withdrawETH*/,\n        address /*_callbackTarget*/\n    ) external payable returns (bytes32) {\n        return keccak256(abi.encodePacked(block.timestamp, msg.sender));\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

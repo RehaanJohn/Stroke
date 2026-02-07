@@ -32,6 +32,8 @@ class TradePlan:
     confidence: int  # 0-100
     
     position_size_percent: float  # % of portfolio
+    position_size_usd: float    # Absolute size in USD
+    leverage: int               # Position leverage
     entry_price: float
     
     take_profit_1: float
@@ -71,9 +73,10 @@ class GeminiAnalyzer:
     
     # Models in order of preference (will fallback if quota exceeded)
     MODELS = [
-        "gemini-2.0-flash-exp",  # Latest Gemini 2.0 Flash (free, high quota)
-        "gemini-1.5-flash",       # Stable Gemini 1.5 Flash (free, high quota)
-        "gemini-1.5-pro",         # Gemini 1.5 Pro fallback (if available)
+        "gemini-2.0-flash",       # Latest Gemini 2.0 Flash
+        "gemini-1.5-flash",       # Stable Gemini 1.5 Flash
+        "gemini-1.5-flash-8b",    # Ultra-fast 8B model
+        "gemini-1.5-pro",         # Gemini 1.5 Pro fallback
     ]
     
     # Gemini batch analysis prompt
@@ -106,6 +109,7 @@ OUTPUT FORMAT (JSON ARRAY - ONE OBJECT PER TOKEN):
       {{"level": 3, "price_target": -75.0, "close_percent": 30}}
     ],
     "stop_loss_percent": 12.0,
+    "leverage": 2-10,
     "best_execution_chain": "ethereum" | "arbitrum" | "base" | "optimism",
     "reasoning": "2-3 sentence explanation focusing on strongest signals",
     "risk_factors": ["list", "of", "3-5", "key", "risks"]
@@ -307,13 +311,19 @@ TIER 1 REASONING: {flagged.reasoning}
             
             # Position sizing based on confidence
             if confidence >= 90:
-                position_size = 20.0
+                position_size_pct = 20.0
             elif confidence >= 80:
-                position_size = 15.0
+                position_size_pct = 15.0
             elif confidence >= 70:
-                position_size = 10.0
+                position_size_pct = 10.0
             else:
-                position_size = 0.0
+                position_size_pct = 0.0
+            
+            # Position size in USD (max $10k per trade for testing)
+            position_size_usd = position_size_pct * 500  # $10k if 20% 
+            
+            # leverage
+            leverage = 2 if confidence < 85 else 5
             
             # Estimate current price (mock)
             current_price = 1.0 if signal.market_cap_usd > 10_000_000 else 0.50
@@ -360,7 +370,9 @@ TIER 1 REASONING: {flagged.reasoning}
                 chain=signal.chain,
                 decision=decision,
                 confidence=min(confidence, 100),
-                position_size_percent=position_size,
+                position_size_percent=position_size_pct,
+                position_size_usd=position_size_usd,
+                leverage=leverage,
                 entry_price=current_price,
                 take_profit_1=current_price * (1 + tp1_pct/100),
                 take_profit_1_percent=tp1_pct,
@@ -566,6 +578,8 @@ TIER 1 REASONING: {flagged.reasoning}
                     decision=analysis["decision"],
                     confidence=analysis["confidence"],
                     position_size_percent=analysis["position_size_percent"],
+                    position_size_usd=analysis.get("position_size_usd", analysis["position_size_percent"] * 500),
+                    leverage=analysis.get("leverage", 2),
                     entry_price=current_price,
                     take_profit_1=current_price * (1 + analysis["take_profit_levels"][0]["price_target"]/100),
                     take_profit_1_percent=analysis["take_profit_levels"][0]["price_target"],

@@ -20,10 +20,17 @@ interface Tweet {
 }
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  
+  // Only use wagmi hooks on client side
   const { isConnected } = useAccount();
   const router = useRouter();
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [loadingTweets, setLoadingTweets] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch latest tweets
   useEffect(() => {
@@ -46,6 +53,16 @@ export default function Home() {
     const interval = setInterval(fetchTweets, 30 * 60 * 1000); // Refresh every 30 mins
     return () => clearInterval(interval);
   }, []);
+
+  // Don't render until mounted to avoid hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
+        <div className="text-white text-xl">Loading NEXUS...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Animated Orb Background */}

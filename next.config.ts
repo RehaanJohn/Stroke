@@ -6,11 +6,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
-  // Optimize for development speed
+  // Disable caching in development
   ...(process.env.NODE_ENV === 'development' && {
     onDemandEntries: {
-      maxInactiveAge: 60 * 60 * 1000, // Keep pages in memory for 1 hour
-      pagesBufferLength: 5,           // Keep more pages in memory
+      maxInactiveAge: 25 * 1000,
+      pagesBufferLength: 2,
     },
   }),
   typescript: {
