@@ -152,17 +152,44 @@ interface Tweet {
   verified: boolean;
 }
 
+interface AgentLog {
+  id: number;
+  timestamp: string;
+  type: string;
+  message: string;
+  severity: string;
+}
+
 export default function Portfolio() {
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null);
   const [positionFilter, setPositionFilter] = useState<"active" | "closed">(
     "active",
   );
   const [tweets, setTweets] = useState<Tweet[]>([]);
+  const [agentLogs, setAgentLogs] = useState<AgentLog[]>([]);
   const [loadingTweets, setLoadingTweets] = useState(true);
   const [livePnL, setLivePnL] = useState<number>(0.47);
   const [btcPrice, setBtcPrice] = useState<number>(0);
   const { isConnected, address } = useAccount();
   const router = useRouter();
+
+  // Fetch live agent logs
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const response = await fetch("/api/logs?limit=10");
+        const data = await response.json();
+        setAgentLogs(data.logs || []);
+      } catch (error) {
+        console.error("Failed to fetch agent logs:", error);
+      }
+    };
+
+    fetchLogs();
+    // Poll every 2 seconds for real-time updates
+    const interval = setInterval(fetchLogs, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Fetch live BTC price and calculate P&L
   useEffect(() => {
@@ -611,56 +638,87 @@ export default function Portfolio() {
                     <h2 className="text-xl font-black text-white tracking-tight">
                       Agent Logs
                     </h2>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <Link
+                      href="/logs"
+                      className="p-2 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 border border-slate-500/20 rounded-lg text-white transition-all duration-200 shadow-lg shadow-slate-500/20 hover:scale-110"
+                      title="View all logs"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </Link>
                   </div>
 
                   <div className="flex-1 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                    {mockLogs.map((log) => (
-                      <div
-                        key={log.id}
-                        className={`p-3 rounded-xl border transition-all hover:bg-white/5 ${
-                          log.severity === "critical"
-                            ? "bg-red-500/10 border-red-500/20"
-                            : log.severity === "high"
-                            ? "bg-orange-500/10 border-orange-500/20"
-                            : log.severity === "warning"
-                            ? "bg-yellow-500/10 border-yellow-500/20"
-                            : log.severity === "success"
-                            ? "bg-green-500/10 border-green-500/20"
-                            : "bg-white/5 border-white/5"
-                        }`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <div className="flex-shrink-0 mt-1">
-                            {log.type === "signal" && "📊"}
-                            {log.type === "execution" && "⚡"}
-                            {log.type === "analysis" && "🤖"}
-                            {log.type === "routing" && "🌉"}
-                            {log.type === "monitor" && "👁️"}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs text-white/40 mb-1 font-light">
-                              {log.timestamp}
+                    {agentLogs.length === 0 ? (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center">
+                          <p className="text-white/50 text-sm mb-2 font-light">
+                            No logs yet
+                          </p>
+                          <p className="text-white/40 text-xs font-light">
+                            Run trading script to see activity
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      agentLogs.map((log) => (
+                        <div
+                          key={log.id}
+                          className={`p-3 rounded-xl border transition-all hover:bg-white/5 ${
+                            log.severity === "critical"
+                              ? "bg-red-500/10 border-red-500/20"
+                              : log.severity === "high"
+                              ? "bg-orange-500/10 border-orange-500/20"
+                              : log.severity === "warning"
+                              ? "bg-yellow-500/10 border-yellow-500/20"
+                              : log.severity === "success"
+                              ? "bg-green-500/10 border-green-500/20"
+                              : "bg-white/5 border-white/5"
+                          }`}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className="flex-shrink-0 mt-1">
+                              {log.type === "signal" && "📊"}
+                              {log.type === "execution" && "⚡"}
+                              {log.type === "analysis" && "🤖"}
+                              {log.type === "routing" && "🌉"}
+                              {log.type === "monitor" && "👁️"}
                             </div>
-                            <div
-                              className={`text-sm font-medium tracking-tight ${
-                                log.severity === "critical"
-                                  ? "text-red-300"
-                                  : log.severity === "high"
-                                  ? "text-orange-300"
-                                  : log.severity === "warning"
-                                  ? "text-yellow-300"
-                                  : log.severity === "success"
-                                  ? "text-green-300"
-                                  : "text-white/70"
-                              }`}
-                            >
-                              {log.message}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs text-white/40 mb-1 font-light">
+                                {log.timestamp}
+                              </div>
+                              <div
+                                className={`text-sm font-medium tracking-tight ${
+                                  log.severity === "critical"
+                                    ? "text-red-300"
+                                    : log.severity === "high"
+                                    ? "text-orange-300"
+                                    : log.severity === "warning"
+                                    ? "text-yellow-300"
+                                    : log.severity === "success"
+                                    ? "text-green-300"
+                                    : "text-white/70"
+                                }`}
+                              >
+                                {log.message}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
 
                   <div className="mt-4 pt-4 border-t border-white/5">
@@ -699,9 +757,22 @@ export default function Portfolio() {
                     </div>
                     <Link
                       href="/signals"
-                      className="px-3 py-1.5 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 border border-slate-500/20 rounded-lg text-white text-xs font-semibold transition-all duration-200 shadow-lg shadow-slate-500/20"
+                      className="p-2 bg-gradient-to-r from-slate-600 to-slate-500 hover:from-slate-500 hover:to-slate-400 border border-slate-500/20 rounded-lg text-white transition-all duration-200 shadow-lg shadow-slate-500/20 hover:scale-110"
+                      title="View all signals"
                     >
-                      View All
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
                     </Link>
                   </div>
 

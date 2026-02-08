@@ -41,7 +41,7 @@ class OrchestrationEngine:
             batch_size: Number of tokens to process per Tier 1 batch
             tier1_mock: Use mock classifier for Tier 1
             tier2_mock: Use mock analyzer for Tier 2
-            max_tier2_parallel: Max parallel Claude API calls
+            max_tier2_parallel: Max parallel Gemini API calls
         """
         self.batch_size = batch_size
         self.max_tier2_parallel = max_tier2_parallel
@@ -447,7 +447,7 @@ class OrchestrationEngine:
             "tier2_shorts": sum(1 for tp in trade_plans if tp.decision == "SHORT"),
             "tier2_monitors": sum(1 for tp in trade_plans if tp.decision == "MONITOR"),
             "tier2_passes": sum(1 for tp in trade_plans if tp.decision == "PASS"),
-            "claude_api_cost": tier2_stats.get("total_api_cost_usd", 0.0),
+            "gemini_api_cost": tier2_stats.get("total_api_cost_usd", 0.0),
             "timestamp": datetime.utcnow().isoformat()
         }
         

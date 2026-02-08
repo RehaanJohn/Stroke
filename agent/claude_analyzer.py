@@ -12,8 +12,11 @@ from dataclasses import dataclass, asdict
 import os
 import math
 
-from google import genai
-from google.genai import types
+# Import genai correctly
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
 
 from .local_llm_screener import FlaggedToken
 

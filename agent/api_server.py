@@ -12,7 +12,8 @@ import asyncio
 from datetime import datetime
 
 from agent.orchestration import OrchestrationEngine
-from agent.claude_analyzer import TradePlan
+from agent.gemini_analyzer import TradePlan
+from agent.log_manager import get_log_manager
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -50,7 +51,7 @@ class CycleSummary(BaseModel):
     tier1_flagged: int
     tier2_shorts: int
     tier2_monitors: int
-    claude_api_cost: float
+    gemini_api_cost: float
 
 
 class TradePlanResponse(BaseModel):
@@ -208,27 +209,36 @@ async def get_stats():
 
 
 @app.get("/logs")
-async def get_recent_logs(limit: int = 50):
-    """Get recent agent decision logs"""
-    # TODO: Implement log streaming
-    return {
-        "logs": [
-            {
-                "id": 1,
-                "timestamp": "2m ago",
-                "type": "signal",
-                "message": "Twitter engagement for @CryptoKing dropped 72% (25 pts)",
-                "severity": "high"
-            },
-            {
-                "id": 2,
-                "timestamp": "5m ago",
-                "type": "execution",
-                "message": "Short position opened: $SCAMCOIN on Base",
-                "severity": "success"
-            }
-        ]
-    }
+async def get_recent_logs(
+    limit: int = 100,
+    log_type: Optional[str] = None,
+    severity: Optional[str] = None
+):
+    """Get recent agent logs with optional filtering"""
+    log_manager = get_log_manager()
+    
+    logs = log_manager.get_logs(
+        limit=limit,
+        log_type=log_type,
+        severity=severity
+    )
+    
+    return {"logs": logs}
+
+
+@app.get("/logs/stats")
+async def get_log_stats():
+    """Get log statistics"""
+    log_manager = get_log_manager()
+    return log_manager.get_stats()
+
+
+@app.delete("/logs")
+async def clear_logs():
+    """Clear all logs"""
+    log_manager = get_log_manager()
+    log_manager.clear_logs()
+    return {"message": "Logs cleared successfully"}
 
 
 # Background task

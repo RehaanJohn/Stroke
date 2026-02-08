@@ -216,16 +216,6 @@ export default function Signals() {
           {/* Tabs */}
           <div className="flex gap-2 bg-zinc-900/80 p-1 rounded-xl border border-white/5 mb-6 w-fit">
             <button
-              onClick={() => setActiveTab("all")}
-              className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                activeTab === "all"
-                  ? "bg-gradient-to-r from-slate-600 to-slate-500 text-white shadow-lg shadow-slate-500/20"
-                  : "text-white/40 hover:text-white/60"
-              }`}
-            >
-              All Signals
-            </button>
-            <button
               onClick={() => setActiveTab("twitter")}
               className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                 activeTab === "twitter"

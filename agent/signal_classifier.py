@@ -41,7 +41,7 @@ class MarketPhase(Enum):
 
 @dataclass
 class TradePlan:
-    """Trade plan from Claude/Gemini Tier 2"""
+    """Trade plan from Gemini Tier 2"""
     token_symbol: str
     token_address: str
     chain: str
