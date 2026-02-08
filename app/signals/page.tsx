@@ -6,12 +6,14 @@ import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 interface TwitterSignal {
-  id: number;
+  id: string;
   username: string;
   text: string;
-  sentiment: "bullish" | "bearish" | "neutral";
-  engagementDrop?: number;
-  timestamp: string;
+  time: string;
+  likes: number;
+  retweets: number;
+  replies: number;
+  verified: boolean;
 }
 
 interface YahooSignal {
@@ -42,26 +44,17 @@ export default function Signals() {
   >("all");
   const { isConnected } = useAccount();
 
-  // Fetch Twitter signals
+  // Fetch Twitter signals from database
   useEffect(() => {
     const fetchTwitter = async () => {
       try {
-        const response = await fetch("/api/twitter/trending?limit=10");
+        const response = await fetch("/api/twitter/db");
         const data = await response.json();
-        if (data.success && data.tweets) {
-          const signals = data.tweets.map((tweet: any, idx: number) => ({
-            id: idx + 1,
-            username: tweet.username,
-            text: tweet.text,
-            sentiment: Math.random() > 0.5 ? "bearish" : "bullish",
-            engagementDrop:
-              Math.random() > 0.5 ? Math.floor(Math.random() * 80) : undefined,
-            timestamp: new Date().toISOString(),
-          }));
-          setTwitterSignals(signals);
+        if (data.tweets && Array.isArray(data.tweets)) {
+          setTwitterSignals(data.tweets);
         }
       } catch (error) {
-        console.error("Failed to fetch Twitter signals:", error);
+        console.error("Failed to fetch Twitter signals from database:", error);
       }
     };
 
@@ -70,56 +63,23 @@ export default function Signals() {
     return () => clearInterval(interval);
   }, []);
 
-  // Mock Yahoo Finance signals
+  // Fetch Yahoo Finance signals from real API
   useEffect(() => {
-    const mockYahoo: YahooSignal[] = [
-      {
-        id: 1,
-        symbol: "BTC-USD",
-        price: 95234.5,
-        change: 1234.5,
-        changePercent: 1.31,
-        volume: 28500000000,
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        symbol: "ETH-USD",
-        price: 3456.78,
-        change: -45.22,
-        changePercent: -1.29,
-        volume: 15200000000,
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        symbol: "SOL-USD",
-        price: 145.67,
-        change: 3.45,
-        changePercent: 2.42,
-        volume: 3400000000,
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: 4,
-        symbol: "AAPL",
-        price: 178.23,
-        change: -2.45,
-        changePercent: -1.36,
-        volume: 52000000,
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: 5,
-        symbol: "TSLA",
-        price: 245.89,
-        change: 5.67,
-        changePercent: 2.36,
-        volume: 98000000,
-        timestamp: new Date().toISOString(),
-      },
-    ];
-    setYahooSignals(mockYahoo);
+    const fetchYahoo = async () => {
+      try {
+        const response = await fetch("/api/market/yahoo");
+        const data = await response.json();
+        if (data.signals && Array.isArray(data.signals)) {
+          setYahooSignals(data.signals);
+        }
+      } catch (error) {
+        console.error("Failed to fetch Yahoo Finance data:", error);
+      }
+    };
+
+    fetchYahoo();
+    const interval = setInterval(fetchYahoo, 60000); // Update every minute
+    return () => clearInterval(interval);
   }, []);
 
   // Mock SEC signals
@@ -309,37 +269,37 @@ export default function Signals() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20">
-                        <span className="text-lg">🐦</span>
+                        <span className="text-lg">𝕏</span>
                       </div>
                       <div>
-                        <div className="text-white font-semibold">
-                          @{signal.username}
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-semibold">
+                            @{signal.username}
+                          </span>
+                          {signal.verified && (
+                            <span className="text-blue-400 text-xs">✓</span>
+                          )}
                         </div>
                         <div className="text-white/40 text-xs">
-                          Twitter Signal
+                          {signal.time}
                         </div>
                       </div>
                     </div>
-                    <span
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold ${
-                        signal.sentiment === "bearish"
-                          ? "bg-red-500/10 border border-red-500/20 text-red-400"
-                          : signal.sentiment === "bullish"
-                          ? "bg-green-500/10 border border-green-500/20 text-green-400"
-                          : "bg-slate-500/10 border border-slate-500/20 text-slate-300"
-                      }`}
-                    >
-                      {signal.sentiment}
-                    </span>
                   </div>
-                  <p className="text-white/60 text-sm mb-3 line-clamp-2">
+                  <p className="text-white/70 text-sm mb-3 leading-relaxed">
                     {signal.text}
                   </p>
-                  {signal.engagementDrop && (
-                    <div className="flex items-center gap-2 text-red-400 text-xs">
-                      <span>↓ {signal.engagementDrop}% engagement drop</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-4 text-xs text-white/40">
+                    <span className="flex items-center gap-1">
+                      💬 {signal.replies.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      🔄 {signal.retweets.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      ❤️ {signal.likes.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               ))}
 

@@ -142,14 +142,14 @@ const mockLogs = [
 ];
 
 interface Tweet {
-  id: number;
+  id: string;
   username: string;
   text: string;
   time: string;
-  likes: string;
-  retweets: string;
-  replies: string;
-  scrapedAt: string;
+  likes: number;
+  retweets: number;
+  replies: number;
+  verified: boolean;
 }
 
 export default function Portfolio() {
@@ -194,18 +194,18 @@ export default function Portfolio() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch tweets on mount and every 12 hours
+  // Fetch tweets from database on mount and every 12 hours
   useEffect(() => {
     const fetchTweets = async () => {
       try {
         setLoadingTweets(true);
-        const response = await fetch("/api/twitter/trending?limit=30");
+        const response = await fetch("/api/twitter/db");
         const data = await response.json();
-        if (data.success && data.tweets) {
+        if (data.tweets && Array.isArray(data.tweets)) {
           setTweets(data.tweets);
         }
       } catch (error) {
-        console.error("Failed to fetch tweets:", error);
+        console.error("Failed to fetch tweets from database:", error);
       } finally {
         setLoadingTweets(false);
       }
@@ -733,7 +733,7 @@ export default function Portfolio() {
                           className="p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-pointer group"
                         >
                           <div className="flex items-start gap-2 mb-2">
-                            <div className="w-6 h-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center flex-shrink-0 border border-purple-500/20">
+                            <div className="w-6 h-6 bg-gradient-to-br from-slate-500/20 to-slate-600/20 rounded-full flex items-center justify-center flex-shrink-0 border border-slate-500/20">
                               <span className="text-white text-xs font-black">
                                 {tweet.username.charAt(0).toUpperCase()}
                               </span>
@@ -743,13 +743,10 @@ export default function Portfolio() {
                                 <span className="text-white text-sm font-semibold truncate tracking-tight">
                                   @{tweet.username}
                                 </span>
-                                {[
-                                  "elonmusk",
-                                  "VitalikButerin",
-                                  "saylor",
-                                  "cz_binance",
-                                ].includes(tweet.username) && (
-                                  <span className="text-xs">✓</span>
+                                {tweet.verified && (
+                                  <span className="text-blue-400 text-xs">
+                                    ✓
+                                  </span>
                                 )}
                               </div>
                               <span className="text-white/40 text-xs font-light">
@@ -763,15 +760,15 @@ export default function Portfolio() {
                           <div className="flex items-center gap-4 text-xs text-white/40 font-light">
                             <span className="flex items-center gap-1">
                               <span>💬</span>
-                              {tweet.replies}
+                              {tweet.replies.toLocaleString()}
                             </span>
                             <span className="flex items-center gap-1">
                               <span>🔄</span>
-                              {tweet.retweets}
+                              {tweet.retweets.toLocaleString()}
                             </span>
                             <span className="flex items-center gap-1">
                               <span>❤️</span>
-                              {tweet.likes}
+                              {tweet.likes.toLocaleString()}
                             </span>
                           </div>
                         </div>

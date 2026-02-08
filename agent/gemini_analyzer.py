@@ -12,8 +12,8 @@ from dataclasses import dataclass, asdict
 import os
 import math
 
-from google import genai
-from google.genai import types
+import google.generativeai as genai
+from google.generativeai import types
 
 from .local_llm_screener import FlaggedToken
 
@@ -140,7 +140,7 @@ Analyze all tokens and return a JSON array with complete analysis for each token
             mock_mode: If True, use rule-based analysis instead of API calls
         """
         self.mock_mode = mock_mode
-        self.client = None
+        self.model = None
         self.current_model_index = 0  # Track which model we're using
         self.last_request_time = 0
         self.min_request_interval = 1.0  # Minimum seconds between requests
@@ -170,8 +170,8 @@ Analyze all tokens and return a JSON array with complete analysis for each token
         if not api_key:
             raise ValueError("Gemini API key required. Set GEMINI_API_KEY env var.")
         
-        os.environ["GOOGLE_API_KEY"] = api_key
-        self.client = genai.Client(api_key=api_key)
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel(self.MODELS[0])
         logger.info(f"✅ Gemini API client initialized (model: {self.MODELS[0]})")
     
     def _rate_limit(self):
@@ -263,48 +263,44 @@ TIER 1 REASONING: {flagged.reasoning}
         for flagged in flagged_tokens:
             signal = flagged.signal
             
-            # Calculate confidence based on red flags
-            confidence = 0
+            # Start with base confidence from Tier 1 urgency
+            confidence = flagged.urgency_score * 10  # urgency 7 = 70% base confidence
             risk_factors = []
             
-            # High-impact signals
-            if signal.insider_sells_24h > 5 and signal.insider_sell_volume_usd > 500000:
-                confidence += 25
-                risk_factors.append("Major insider dump detected")
+            # High-impact signals (boost confidence)
+            if signal.insider_sells_24h > 3:
+                confidence += 15
+                risk_factors.append(f"Insider selling: {signal.insider_sells_24h} transactions")
             
-            if signal.liquidity_change_24h < -40:
-                confidence += 20
-                risk_factors.append("Severe liquidity removal")
+            if signal.liquidity_change_24h < -20:
+                confidence += 15
+                risk_factors.append(f"Liquidity removal: {signal.liquidity_change_24h:.1f}%")
             
-            if signal.tvl_change_24h < -40:
-                confidence += 20
-                risk_factors.append("TVL collapse")
+            if signal.tvl_change_24h < -25:
+                confidence += 10
+                risk_factors.append(f"TVL decline: {signal.tvl_change_24h:.1f}%")
             
             # Medium-impact signals
-            if signal.twitter_engagement_change_48h < -60:
-                confidence += 15
-                risk_factors.append("Twitter engagement crash")
-            
-            if signal.dev_departures_30d > 2:
+            if signal.twitter_engagement_change_48h < -40:
                 confidence += 10
-                risk_factors.append("Multiple developer exits")
+                risk_factors.append("Social media engagement declining")
             
-            if signal.influencer_silence_hours > 72:
-                confidence += 10
-                risk_factors.append("Prolonged influencer silence")
+            if signal.dev_departures_30d > 0:
+                confidence += 5
+                risk_factors.append(f"{signal.dev_departures_30d} developer exits")
             
             # Governance risks
-            if signal.vote_passed and signal.recent_vote_type == "treasury_raid":
-                confidence += 15
-                risk_factors.append("Treasury raid vote passed")
-            elif signal.vote_passed and signal.recent_vote_type == "inflation":
+            if signal.vote_passed and signal.recent_vote_type == "inflation":
                 confidence += 10
-                risk_factors.append("Token inflation approved")
+                risk_factors.append("Inflationary governance vote passed")
+            
+            # Cap at 100%
+            confidence = min(confidence, 100)
             
             # Determine decision
-            if confidence >= 70:
+            if confidence >= 75:
                 decision = "SHORT"
-            elif confidence >= 50:
+            elif confidence >= 60:
                 decision = "MONITOR"
             else:
                 decision = "PASS"
@@ -420,13 +416,12 @@ TIER 1 REASONING: {flagged.reasoning}
                 current_model = self._get_current_model()
                 logger.info(f"📡 Sending BATCH request to Gemini ({current_model}) for {len(flagged_tokens)} tokens...")
                 
-                response = self.client.models.generate_content(
-                    model=current_model,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        temperature=1.0,  # Keep default for Gemini 3
-                        response_mime_type="application/json"
-                    )
+                response = self.model.generate_content(
+                    prompt,
+                    generation_config={
+                        "temperature": 1.0,
+                        "response_mime_type": "application/json"
+                    }
                 )
                 
                 # Parse JSON response

@@ -9,9 +9,6 @@ from datetime import datetime
 import json
 import time
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
-
 from .data_ingestion import TokenSignal
 
 logging.basicConfig(level=logging.INFO)

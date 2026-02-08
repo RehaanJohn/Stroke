@@ -15,7 +15,6 @@ Key Features:
 """
 
 from web3 import Web3
-from web3.middleware import geth_poa_middleware
 from eth_account import Account
 from typing import Dict, Optional, List
 import os
@@ -51,7 +50,7 @@ class ContractExecutor:
     
     def __init__(self):
         # Load environment variables
-        self.rpc_url = os.getenv('ARBITRUM_RPC', 'https://arb1.arbitrum.io/rpc')
+        self.rpc_url = os.getenv('RPC_URL', 'https://sepolia-rollup.arbitrum.io/rpc')
         self.agent_key = os.getenv('AGENT_PRIVATE_KEY')
         self.vault_address = os.getenv('NEXUS_VAULT_ADDRESS')
         
@@ -62,7 +61,6 @@ class ContractExecutor:
         
         # Setup Web3
         self.w3 = Web3(Web3.HTTPProvider(self.rpc_url))
-        self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         
         if not self.w3.is_connected():
             raise ConnectionError("Failed to connect to Arbitrum RPC")
@@ -165,6 +163,52 @@ class ContractExecutor:
             }
         ]
     
+    async def execute_trade(self, trade_plan) -> str:
+        """
+        Execute trade from gemini_analyzer.TradePlan
+        
+        Args:
+            trade_plan: TradePlan from gemini_analyzer with confidence, decision, etc.
+        
+        Returns:
+            Transaction hash
+        """
+        from agent.gemini_analyzer import TradePlan as GeminiTradePlan
+        
+        # Map token symbols to actual Arbitrum addresses
+        TOKEN_ADDRESSES = {
+            "WETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",  # Wrapped ETH on Arbitrum
+            "WBTC": "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",  # Wrapped BTC on Arbitrum
+            "ARB": "0x912CE59144191C1204E64559FE8253a0e49E6548",   # Arbitrum token
+            "USDC": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",  # USDC on Arbitrum
+            "USDT": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",  # USDT on Arbitrum
+        }
+        
+        # Default to WETH if token not found or invalid
+        token_address = TOKEN_ADDRESSES.get(trade_plan.token_symbol, TOKEN_ADDRESSES["WETH"])
+        
+        # Convert to ContractExecutor TradePlan format
+        executor_plan = TradePlan(
+            token_address=token_address,
+            token_symbol=trade_plan.token_symbol,
+            source_chain=trade_plan.chain,
+            collateral_usdc=int(trade_plan.position_size_usd * 1_000_000),  # Convert to 6 decimals
+            entry_price=int(trade_plan.entry_price * 10**30),  # Convert to 30 decimals
+            confidence=trade_plan.confidence,
+            leverage=trade_plan.leverage,
+            signals=trade_plan.risk_factors
+        )
+        
+        # Execute the short
+        print(f"\n🚀 Executing SHORT position...")
+        print(f"   Token: {executor_plan.token_symbol} ({token_address})")
+        print(f"   Amount: ${executor_plan.collateral_usdc / 1_000_000:.2f} USDC")
+        print(f"   Leverage: {executor_plan.leverage}x")
+        print(f"   Entry Price: ${executor_plan.entry_price / 10**30:.2f}")
+        
+        tx_hash = self.execute_short(executor_plan)
+        return tx_hash
+    
     def execute_short(
         self,
         trade_plan: TradePlan,
@@ -204,6 +248,10 @@ class ContractExecutor:
         
         # Build transaction
         try:
+            # Get current gas price and increase it by 20% to ensure it goes through
+            base_gas_price = self.w3.eth.gas_price
+            gas_price = int(base_gas_price * 1.2)
+            
             tx = self.vault.functions.executeShort(
                 Web3.to_checksum_address(trade_plan.token_address),
                 trade_plan.collateral_usdc,
@@ -215,9 +263,9 @@ class ContractExecutor:
                 'from': self.agent_address,
                 'value': gmx_fee,
                 'gas': 800000,  # Gas limit
-                'gasPrice': self.w3.eth.gas_price,
+                'gasPrice': gas_price,  # Use increased gas price
                 'nonce': self.w3.eth.get_transaction_count(self.agent_address),
-                'chainId': 42161  # Arbitrum
+                'chainId': 421614  # Arbitrum Sepolia testnet
             })
         except Exception as e:
             print(f"❌ Failed to build transaction: {e}")
@@ -228,7 +276,7 @@ class ContractExecutor:
         
         # Send transaction
         try:
-            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.raw_transaction)
             print(f"✅ Transaction sent: {tx_hash.hex()}")
             
             # Wait for confirmation
